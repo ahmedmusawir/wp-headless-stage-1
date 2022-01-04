@@ -68,7 +68,7 @@ function BlogIndex() {
             <article key={post.id} className="list-group-item">
               <div className="mb-2 row">
                 <div className="col-sm-10">
-                  <Link to={`/post/${post.id}`}>
+                  <Link to={`/single-post/${post.id}`}>
                     <li className="list-group-item">
                       {parse(post.title.rendered)}{' '}
                       <span className="badge badge-primary">
