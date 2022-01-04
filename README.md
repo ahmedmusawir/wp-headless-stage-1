@@ -1,7 +1,9 @@
 # WP HEADLESS STAGE ONE W/ REACT
+
 Building a React App with a HeadLess WordPress Backend - STAGE ONE
 
 ## STAGE ONE Includes
+
 - Node-WPAPI
 - CRUD Operation
 - Routing (react-router-dom 5.x)
@@ -12,6 +14,9 @@ Building a React App with a HeadLess WordPress Backend - STAGE ONE
 - WordPress Application Password
 
 ### How to run
-- Download with Git clone and run the following:
+
+- Make sure you have WordPress installed as a data source.
+- Download with Git clone and update the WordPress URL info.
+- Then run the following:
 - `npm install`
-- `gulp watch`
+- `npm start`
