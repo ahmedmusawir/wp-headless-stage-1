@@ -1,7 +1,7 @@
-# wp-headless-stage-1
+# WP HEADLESS STAGE ONE W/ REACT
 Building a React App with a HeadLess WordPress Backend - STAGE ONE
 
-## STAGE ONE INCLUDES
+## STAGE ONE Includes
 - Node-WPAPI
 - CRUD Operation
 - Routing (react-router-dom 5.x)
