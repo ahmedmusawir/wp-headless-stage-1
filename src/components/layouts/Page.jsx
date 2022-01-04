@@ -6,7 +6,7 @@ import './Page.scss';
 function Page({ wide, pageTitle, children }) {
   // Setting up mandatory Page Title in the browser
   useEffect(() => {
-    document.title = `${pageTitle} | React Demo 1 `;
+    document.title = `${pageTitle} | React Demo`;
   }, [pageTitle]);
 
   // Checking for page width prop fluid to be true or false
@@ -14,13 +14,13 @@ function Page({ wide, pageTitle, children }) {
   // it is not full-width
   if (wide) {
     return (
-      <div className='page'>
+      <div className="page">
         <Container fluid>{children}</Container>
       </div>
     );
   } else {
     return (
-      <div className='page'>
+      <div className="page">
         <Container>{children}</Container>
       </div>
     );

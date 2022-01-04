@@ -4,17 +4,17 @@ import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
 
 function MainNavbar(props) {
   return (
-    <Navbar bg='light' expand='md'>
+    <Navbar bg="light" expand="md">
       <Container>
-        <Navbar.Brand as={Link} to='/'>
-          React Demo 1
+        <Navbar.Brand as={Link} to="/">
+          React & WP
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls='basic-navbar-nav' />
-        <Navbar.Collapse id='basic-navbar-nav'>
-          <Nav className='me-auto'>
-            <Nav.Link as={Link} to='/'>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ml-auto">
+            {/* <Nav.Link as={Link} to="/">
               Context
-            </Nav.Link>
+            </Nav.Link> */}
             {/* <NavDropdown title='Helpers' id='basic-nav-dropdown'>
               <NavDropdown.Item as={Link} to='/use-state-page'>
                 useState

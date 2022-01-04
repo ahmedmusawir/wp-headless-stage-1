@@ -5,11 +5,11 @@ import Content from '../components/layouts/Content';
 
 function HomePage() {
   return (
-    <Page wide={true} pageTitle='Movie Form'>
-      <Row className='justify-content-center'>
+    <Page wide={true} pageTitle="HeadLess WP">
+      <Row className="justify-content-center">
         <Col sm={12}>
-          <Content width='w-100' cssClassNames='bg-light'>
-            <h1>React WP & JWT Authentication</h1>
+          <Content width="w-100" cssClassNames="bg-light">
+            <h1>React Blog w/ HeadLess WP </h1>
           </Content>
         </Col>
       </Row>
