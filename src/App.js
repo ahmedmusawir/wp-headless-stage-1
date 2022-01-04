@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import MainNavbar from './components/general/MainNavbar';
 import NotFound from './pages/NotFound';
-import './App.scss';
 import HomePage from './pages/HomePage';
+import './App.scss';
 
 function App(props) {
   return (
@@ -11,10 +11,10 @@ function App(props) {
       <MainNavbar />
       <main>
         <Switch>
-          <Route exact path='/'>
+          <Route exact path="/">
             <HomePage />
           </Route>
-          <Route path='/*'>
+          <Route path="/*">
             <NotFound />
           </Route>
         </Switch>
