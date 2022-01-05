@@ -3,6 +3,7 @@ import Loader from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
 import WPAPI from 'wpapi';
 import parse from 'html-react-parser';
+import PostPagination from './general/PostPagination';
 
 function BlogIndex() {
   // Create WPAPI instance and add endpoint to /wp-json
@@ -12,24 +13,22 @@ function BlogIndex() {
     password: '8gLw rmzE hQhZ av4L 1ljg x119',
   });
 
-  // const wp = new WPAPI({
-  //   endpoint: 'https://digitalsupportstaff.com/wp-json',
-  //   username: 'cgteam',
-  //   password: 'hUoV 8WCW Dllz 4rP4 BlEo Ip27',
-  // });
-
   const [posts, setPosts] = useState([]);
   const [isPending, setIsPending] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [perPage, setPerPage] = useState(5);
 
   useEffect(() => {
     async function fetchPosts() {
       try {
         setIsPending(true);
         // Fetch posts
-        const fetchedPosts = await wp.posts().get();
+        const fetchedPosts = await wp.posts().perPage(perPage).get();
+        console.log(fetchedPosts);
 
-        // console.log(fetchedPosts);
         setPosts(fetchedPosts);
+        setTotalPages(fetchedPosts._paging.totalPages);
         setIsPending(false);
       } catch (e) {
         // print error
@@ -53,6 +52,17 @@ function BlogIndex() {
         setPosts(posts.filter((post) => post.id !== res.id));
         setIsPending(false);
       });
+  };
+
+  const handlePageChange = async (page) => {
+    setIsPending(true);
+    setCurrentPage(page);
+    console.log('Current Page', page);
+
+    const nextPage = await wp.posts().perPage(perPage).page(page);
+
+    setPosts(nextPage);
+    setIsPending(false);
   };
 
   return (
@@ -89,6 +99,11 @@ function BlogIndex() {
             </article>
           ))}
       </section>
+      <PostPagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }
