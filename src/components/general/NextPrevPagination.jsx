@@ -17,7 +17,7 @@ function NextPrevPagination({
       </button>
       <button
         className="btn btn-info"
-        onClick={() => onNextPage(currentPage)}
+        onClick={onNextPage}
         disabled={currentPage === totalPages ? true : false}
       >
         Next

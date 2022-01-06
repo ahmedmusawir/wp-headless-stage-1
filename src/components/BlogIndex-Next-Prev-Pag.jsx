@@ -16,7 +16,7 @@ function BlogIndex() {
 
   const [posts, setPosts] = useState([]);
   const [isPending, setIsPending] = useState(false);
-  const [pageNumber, setPageNumber] = useState(2);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [perPage] = useState(5);
 
@@ -25,8 +25,12 @@ function BlogIndex() {
       // Loading Spinner Starts
       setIsPending(true);
       // Fetch posts
-      console.log('Current Page:', pageNumber);
-      const fetchedPosts = await wp.posts().perPage(perPage).page(1).get();
+      console.log('Current Page:', currentPage);
+      const fetchedPosts = await wp
+        .posts()
+        .perPage(perPage)
+        .page(currentPage)
+        .get();
       console.log('First Page:', fetchedPosts);
 
       setTotalPages(fetchedPosts._paging.totalPages);
@@ -34,6 +38,8 @@ function BlogIndex() {
 
       // Loading Spinner Ends
       setIsPending(false);
+
+      return fetchedPosts;
     } catch (e) {
       // print error
       console.log(e);
@@ -43,7 +49,7 @@ function BlogIndex() {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [currentPage]);
 
   const deletePost = async (id) => {
     setIsPending(true);
@@ -59,36 +65,14 @@ function BlogIndex() {
       });
   };
 
-  const loadMorePosts = async (pageNumber) => {
-    // Loading Spinner Starts
-    setIsPending(true);
-
-    const request = wp.posts();
-    // console.log('Request - loadMorePosts:', request);
-    console.log('Current Pg - loadMorePosts:', pageNumber);
-
-    if (pageNumber > 1) {
-      request.perPage(perPage).page(pageNumber);
-    }
-
-    const newPosts = await request.get();
-    console.log('New Posts - loadMorePosts:', newPosts);
-
-    // Loading Spinner Starts
-    setIsPending(false);
-
-    return {
-      newPosts,
-      newPageNumber: totalPages > pageNumber ? pageNumber + 1 : null,
-    };
+  const handleNextPage = async () => {
+    setCurrentPage((prev) => prev + 1);
+    await fetchPosts();
   };
-  const handleLoadmore = async () => {
-    console.log('Handling Load More');
-    const snapShot = await loadMorePosts(pageNumber);
 
-    setPosts([...posts, ...snapShot.newPosts]);
-
-    setPageNumber(snapShot.newPageNumber);
+  const handlePrevPage = async () => {
+    setCurrentPage((prev) => prev - 1);
+    await fetchPosts();
   };
 
   return (
@@ -96,7 +80,7 @@ function BlogIndex() {
       <section className="list-group">
         {isPending && (
           <div className="text-center">
-            {/* <Loader type="ThreeDots" color="red" height={100} width={100} /> */}
+            <Loader type="ThreeDots" color="red" height={100} width={100} />
             {/* <Loader type="Watch" color="red" height={100} width={100} /> */}
             {/* <Loader type="RevolvingDot" color="red" height={100} width={100} /> */}
             {/* <Loader type="Puff" color="red" height={100} width={100} /> */}
@@ -130,20 +114,12 @@ function BlogIndex() {
             </article>
           ))}
       </section>
-      {isPending && (
-        <div className="text-center">
-          {/* <Loader type="ThreeDots" color="red" height={100} width={100} /> */}
-          {/* <Loader type="Watch" color="red" height={100} width={100} /> */}
-          <Loader type="Puff" color="red" height={50} width={50} />
-        </div>
-      )}
-      {totalPages > 1 && pageNumber && (
-        <section className="loadmore text-center">
-          <button className="btn btn-info mt-3" onClick={handleLoadmore}>
-            Load More...
-          </button>
-        </section>
-      )}
+      <NextPrevPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onNextPage={handleNextPage}
+        onPrevPage={handlePrevPage}
+      />
     </div>
   );
 }
