@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import WPAPI from 'wpapi';
 import parse from 'html-react-parser';
 import PostPagination from './general/PostPagination';
-import NextPrevPagination from './general/NextPrevPagination';
 
 function BlogIndex() {
   // Create WPAPI instance and add endpoint to /wp-json
@@ -16,30 +15,23 @@ function BlogIndex() {
 
   const [posts, setPosts] = useState([]);
   const [isPending, setIsPending] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(() => 1);
   const [totalPages, setTotalPages] = useState(0);
   const [perPage] = useState(5);
 
   const fetchPosts = async () => {
+    console.log('Current Page in Fetch:', currentPage);
     try {
       // Loading Spinner Starts
       setIsPending(true);
       // Fetch posts
       console.log('Current Page:', currentPage);
-      const fetchedPosts = await wp
-        .posts()
-        .perPage(perPage)
-        .page(currentPage)
-        .get();
+      const fetchedPosts = await wp.posts().perPage(perPage).get();
       console.log('First Page:', fetchedPosts);
-
-      setTotalPages(fetchedPosts._paging.totalPages);
       setPosts(fetchedPosts);
 
       // Loading Spinner Ends
       setIsPending(false);
-
-      return fetchedPosts;
     } catch (e) {
       // print error
       console.log(e);
@@ -49,7 +41,7 @@ function BlogIndex() {
 
   useEffect(() => {
     fetchPosts();
-  }, [currentPage]);
+  }, []);
 
   const deletePost = async (id) => {
     setIsPending(true);
@@ -65,27 +57,14 @@ function BlogIndex() {
       });
   };
 
-  const handleNextPage = async (page) => {
-    setIsPending(true);
-    setCurrentPage((prev) => prev + 1);
-    // setCurrentPage(page);
-    console.log('Current Page', page);
-
-    const nextPage = await wp.posts().perPage(perPage).page(page);
-
+  const handleNextPage = async () => {
+    const posts = await wp.posts().perPage(perPage).get();
+    const nextPage = await posts._paging.next.get();
+    console.log('Next Page Data in handleNext Event', nextPage);
     setPosts(nextPage);
-    setIsPending(false);
   };
 
-  // const handleNextPage = async () => {
-  //   setCurrentPage((prev) => prev + 1);
-  //   await fetchPosts();
-  // };
-
-  const handlePrevPage = async () => {
-    setCurrentPage((prev) => prev - 1);
-    await fetchPosts();
-  };
+  const handlePrevPage = async () => {};
 
   return (
     <div>
@@ -123,12 +102,14 @@ function BlogIndex() {
             </article>
           ))}
       </section>
-      <NextPrevPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onNextPage={handleNextPage}
-        onPrevPage={handlePrevPage}
-      />
+      <section className="pagination d-flex justify-content-between mt-3">
+        <button className="btn btn-info" onClick={handlePrevPage}>
+          Previous
+        </button>
+        <button className="btn btn-info" onClick={handleNextPage}>
+          Next
+        </button>
+      </section>
     </div>
   );
 }

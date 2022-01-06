@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import WPAPI from 'wpapi';
 import parse from 'html-react-parser';
 import PostPagination from './general/PostPagination';
-import NextPrevPagination from './general/NextPrevPagination';
 
 function BlogIndex() {
   // Create WPAPI instance and add endpoint to /wp-json
@@ -18,7 +17,7 @@ function BlogIndex() {
   const [isPending, setIsPending] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [perPage] = useState(5);
+  const [perPage] = useState(8);
 
   const fetchPosts = async () => {
     try {
@@ -32,8 +31,6 @@ function BlogIndex() {
         .page(currentPage)
         .get();
       console.log('First Page:', fetchedPosts);
-
-      setTotalPages(fetchedPosts._paging.totalPages);
       setPosts(fetchedPosts);
 
       // Loading Spinner Ends
@@ -49,7 +46,7 @@ function BlogIndex() {
 
   useEffect(() => {
     fetchPosts();
-  }, [currentPage]);
+  }, []);
 
   const deletePost = async (id) => {
     setIsPending(true);
@@ -65,26 +62,14 @@ function BlogIndex() {
       });
   };
 
-  const handleNextPage = async (page) => {
-    setIsPending(true);
-    setCurrentPage((prev) => prev + 1);
-    // setCurrentPage(page);
-    console.log('Current Page', page);
-
-    const nextPage = await wp.posts().perPage(perPage).page(page);
-
-    setPosts(nextPage);
-    setIsPending(false);
+  const handleNextPage = async () => {
+    setCurrentPage(currentPage + 1);
+    await fetchPosts();
   };
 
-  // const handleNextPage = async () => {
-  //   setCurrentPage((prev) => prev + 1);
-  //   await fetchPosts();
-  // };
-
   const handlePrevPage = async () => {
-    setCurrentPage((prev) => prev - 1);
-    await fetchPosts();
+    setCurrentPage((prev) => currentPage - 1);
+    await fetchPosts(currentPage);
   };
 
   return (
@@ -123,12 +108,14 @@ function BlogIndex() {
             </article>
           ))}
       </section>
-      <NextPrevPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onNextPage={handleNextPage}
-        onPrevPage={handlePrevPage}
-      />
+      <section className="pagination d-flex justify-content-between mt-3">
+        <button className="btn btn-info" onClick={handlePrevPage}>
+          Previous
+        </button>
+        <button className="btn btn-info" onClick={handleNextPage}>
+          Next
+        </button>
+      </section>
     </div>
   );
 }
