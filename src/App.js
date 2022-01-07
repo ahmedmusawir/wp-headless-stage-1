@@ -8,6 +8,7 @@ import NextPrevPage from './pages/NextPrevPage';
 import NumericPage from './pages/NumericPage';
 import LoadMorePage from './pages/LoadMorePage';
 import './App.scss';
+import MasonryPage from './pages/MasonryPage';
 
 function App(props) {
   return (
@@ -26,6 +27,9 @@ function App(props) {
           </Route>
           <Route exact path="/loadmore">
             <LoadMorePage />
+          </Route>
+          <Route exact path="/masonry">
+            <MasonryPage />
           </Route>
           <Route exact path="/single-post/:id">
             <SinglePostPage />

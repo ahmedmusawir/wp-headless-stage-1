@@ -15,7 +15,13 @@ function HomePage() {
         </Col>
         <Col sm={12}>
           <Content width="w-100" cssClassNames="bg-light">
-            <BlogIndex />
+            {/* <BlogIndex /> */}
+            <h2>Let's Handle Pagination w/ WPAPI in REACT</h2>
+            <ul className="list-group">
+              <li className="list-group-item">Next/Prev Pagination</li>
+              <li className="list-group-item">Numeric Pagination</li>
+              <li className="list-group-item">Load More Pagination</li>
+            </ul>
           </Content>
         </Col>
       </Row>

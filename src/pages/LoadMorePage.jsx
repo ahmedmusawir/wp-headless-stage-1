@@ -91,6 +91,7 @@ function LoadMorePage() {
 
   return (
     <Page wide={false} pageTitle="LoadMore Page">
+      {/* <button onClick={WTF_ISSUE_3}>Break the world</button>; */}
       <section className="list-group">
         {posts &&
           posts.map((post) => (
