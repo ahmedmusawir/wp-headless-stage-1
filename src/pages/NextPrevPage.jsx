@@ -3,9 +3,10 @@ import Loader from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
 import WPAPI from 'wpapi';
 import parse from 'html-react-parser';
-import NextPrevPagination from './general/NextPrevPagination';
+import NextPrevPagination from '../components/general/NextPrevPagination';
+import Page from '../components/layouts/Page';
 
-function BlogIndex() {
+function NextPrevPage() {
   // Create WPAPI instance and add endpoint to /wp-json
   const wp = new WPAPI({
     endpoint: 'http://localhost:10004/wp-json',
@@ -15,7 +16,7 @@ function BlogIndex() {
 
   const [posts, setPosts] = useState([]);
   const [isPending, setIsPending] = useState(false);
-  const [pageNumber, setPageNumber] = useState(2);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [perPage] = useState(5);
 
@@ -24,8 +25,12 @@ function BlogIndex() {
       // Loading Spinner Starts
       setIsPending(true);
       // Fetch posts
-      console.log('Current Page:', pageNumber);
-      const fetchedPosts = await wp.posts().perPage(perPage).page(1).get();
+      console.log('Current Page:', currentPage);
+      const fetchedPosts = await wp
+        .posts()
+        .perPage(perPage)
+        .page(currentPage)
+        .get();
       console.log('First Page:', fetchedPosts);
 
       setTotalPages(fetchedPosts._paging.totalPages);
@@ -33,6 +38,8 @@ function BlogIndex() {
 
       // Loading Spinner Ends
       setIsPending(false);
+
+      return fetchedPosts;
     } catch (e) {
       // print error
       console.log(e);
@@ -42,7 +49,7 @@ function BlogIndex() {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [currentPage]);
 
   const deletePost = async (id) => {
     setIsPending(true);
@@ -58,41 +65,24 @@ function BlogIndex() {
       });
   };
 
-  const loadMorePosts = async (pageNumber) => {
-    // Loading Spinner Starts
-    setIsPending(true);
-
-    const request = wp.posts();
-    // console.log('Request - loadMorePosts:', request);
-    console.log('Current Pg - loadMorePosts:', pageNumber);
-
-    if (pageNumber > 1) {
-      request.perPage(perPage).page(pageNumber);
-    }
-
-    const newPosts = await request.get();
-    console.log('New Posts - loadMorePosts:', newPosts);
-
-    // Loading Spinner Starts
-    setIsPending(false);
-
-    return {
-      newPosts,
-      newPageNumber: totalPages > pageNumber ? pageNumber + 1 : null,
-    };
+  const handleNextPage = async () => {
+    setCurrentPage((prev) => prev + 1);
+    await fetchPosts();
   };
-  const handleLoadmore = async () => {
-    console.log('Handling Load More');
-    const snapShot = await loadMorePosts(pageNumber);
 
-    setPosts([...posts, ...snapShot.newPosts]);
-
-    setPageNumber(snapShot.newPageNumber);
+  const handlePrevPage = async () => {
+    setCurrentPage((prev) => prev - 1);
+    await fetchPosts();
   };
 
   return (
-    <div>
+    <Page wide={false} pageTitle="NextPrev Page">
       <section className="list-group">
+        {isPending && (
+          <div className="text-center">
+            <Loader type="Audio" color="red" height={100} width={100} />
+          </div>
+        )}
         {posts &&
           posts.map((post) => (
             <article key={post.id} className="list-group-item">
@@ -119,20 +109,14 @@ function BlogIndex() {
             </article>
           ))}
       </section>
-      {isPending && (
-        <div className="text-center">
-          <Loader type="ThreeDots" color="red" height={100} width={100} />
-        </div>
-      )}
-      {totalPages > 1 && pageNumber && (
-        <section className="loadmore text-center">
-          <button className="btn btn-info mt-3" onClick={handleLoadmore}>
-            Load More...
-          </button>
-        </section>
-      )}
-    </div>
+      <NextPrevPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onNextPage={handleNextPage}
+        onPrevPage={handlePrevPage}
+      />
+    </Page>
   );
 }
 
-export default BlogIndex;
+export default NextPrevPage;

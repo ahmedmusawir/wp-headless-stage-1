@@ -1,9 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Pagination } from 'react-bootstrap';
 import _ from 'lodash';
 
-function PostPagination({ totalPages, currentPage, onPageChange }) {
+function NumericPagination({ totalPages, currentPage, onPageChange }) {
   const pagesCount = totalPages;
   if (pagesCount === 1) return null;
   const pages = _.range(1, pagesCount + 1);
@@ -31,6 +30,6 @@ function PostPagination({ totalPages, currentPage, onPageChange }) {
   );
 }
 
-PostPagination.propTypes = {};
+NumericPagination.propTypes = {};
 
-export default PostPagination;
+export default NumericPagination;

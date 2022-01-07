@@ -3,9 +3,9 @@ import Loader from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
 import WPAPI from 'wpapi';
 import parse from 'html-react-parser';
-import PostPagination from './general/PostPagination';
+import Page from '../components/layouts/Page';
 
-function BlogIndex() {
+function LoadMorePage() {
   // Create WPAPI instance and add endpoint to /wp-json
   const wp = new WPAPI({
     endpoint: 'http://localhost:10004/wp-json',
@@ -15,28 +15,31 @@ function BlogIndex() {
 
   const [posts, setPosts] = useState([]);
   const [isPending, setIsPending] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [pageNumber, setPageNumber] = useState(2);
   const [totalPages, setTotalPages] = useState(0);
   const [perPage] = useState(5);
 
   useEffect(() => {
-    async function fetchPosts() {
+    const fetchPosts = async () => {
       try {
+        // Loading Spinner Starts
         setIsPending(true);
         // Fetch posts
-        const fetchedPosts = await wp.posts().perPage(perPage).get();
-        console.log(fetchedPosts);
+        console.log('Current Page:', pageNumber);
+        const fetchedPosts = await wp.posts().perPage(perPage).page(1).get();
+        console.log('First Page:', fetchedPosts);
 
-        setPosts(fetchedPosts);
         setTotalPages(fetchedPosts._paging.totalPages);
+        setPosts(fetchedPosts);
+
+        // Loading Spinner Ends
         setIsPending(false);
       } catch (e) {
         // print error
         console.log(e);
         return [];
       }
-    }
-
+    };
     fetchPosts();
   }, []);
 
@@ -54,25 +57,41 @@ function BlogIndex() {
       });
   };
 
-  const handlePageChange = async (page) => {
+  const loadMorePosts = async (pageNumber) => {
+    // Loading Spinner Starts
     setIsPending(true);
-    setCurrentPage(page);
-    console.log('Current Page', page);
 
-    const nextPage = await wp.posts().perPage(perPage).page(page);
+    const request = wp.posts();
+    // console.log('Request - loadMorePosts:', request);
+    console.log('Current Pg - loadMorePosts:', pageNumber);
 
-    setPosts(nextPage);
+    if (pageNumber > 1) {
+      request.perPage(perPage).page(pageNumber);
+    }
+
+    const newPosts = await request.get();
+    console.log('New Posts - loadMorePosts:', newPosts);
+
+    // Loading Spinner Starts
     setIsPending(false);
+
+    return {
+      newPosts,
+      newPageNumber: totalPages > pageNumber ? pageNumber + 1 : null,
+    };
+  };
+  const handleLoadmore = async () => {
+    console.log('Handling Load More');
+    const snapShot = await loadMorePosts(pageNumber);
+
+    setPosts([...posts, ...snapShot.newPosts]);
+
+    setPageNumber(snapShot.newPageNumber);
   };
 
   return (
-    <div>
+    <Page wide={false} pageTitle="LoadMore Page">
       <section className="list-group">
-        {isPending && (
-          <div className="text-center">
-            <Loader type="Bars" color="red" height={100} width={100} />
-          </div>
-        )}
         {posts &&
           posts.map((post) => (
             <article key={post.id} className="list-group-item">
@@ -99,13 +118,20 @@ function BlogIndex() {
             </article>
           ))}
       </section>
-      <PostPagination
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
-    </div>
+      {isPending && (
+        <div className="text-center">
+          <Loader type="ThreeDots" color="red" height={100} width={100} />
+        </div>
+      )}
+      {totalPages > 1 && pageNumber && (
+        <section className="loadmore text-center">
+          <button className="btn btn-info mt-3 mb-5" onClick={handleLoadmore}>
+            Load More...
+          </button>
+        </section>
+      )}
+    </Page>
   );
 }
 
-export default BlogIndex;
+export default LoadMorePage;

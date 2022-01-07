@@ -3,6 +3,7 @@ import Loader from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
 import WPAPI from 'wpapi';
 import parse from 'html-react-parser';
+import PostPagination from './general/PostPagination';
 import NextPrevPagination from './general/NextPrevPagination';
 
 function BlogIndex() {
@@ -93,6 +94,16 @@ function BlogIndex() {
   return (
     <div>
       <section className="list-group">
+        {isPending && (
+          <div className="text-center">
+            {/* <Loader type="ThreeDots" color="red" height={100} width={100} /> */}
+            {/* <Loader type="Watch" color="red" height={100} width={100} /> */}
+            {/* <Loader type="RevolvingDot" color="red" height={100} width={100} /> */}
+            {/* <Loader type="Puff" color="red" height={100} width={100} /> */}
+            {/* <Loader type="Circles" color="red" height={100} width={100} /> */}
+            {/* <Loader type="BallTriangle" color="red" height={100} width={100} /> */}
+          </div>
+        )}
         {posts &&
           posts.map((post) => (
             <article key={post.id} className="list-group-item">
@@ -122,6 +133,8 @@ function BlogIndex() {
       {isPending && (
         <div className="text-center">
           <Loader type="ThreeDots" color="red" height={100} width={100} />
+          {/* <Loader type="Watch" color="red" height={100} width={100} /> */}
+          {/* <Loader type="Puff" color="red" height={50} width={50} /> */}
         </div>
       )}
       {totalPages > 1 && pageNumber && (

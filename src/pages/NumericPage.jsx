@@ -3,10 +3,10 @@ import Loader from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
 import WPAPI from 'wpapi';
 import parse from 'html-react-parser';
-import PostPagination from './general/PostPagination';
-import NextPrevPagination from './general/NextPrevPagination';
+import Page from '../components/layouts/Page';
+import NumericPagination from '../components/general/NumericPagination';
 
-function BlogIndex() {
+function NumericPage() {
   // Create WPAPI instance and add endpoint to /wp-json
   const wp = new WPAPI({
     endpoint: 'http://localhost:10004/wp-json',
@@ -20,36 +20,26 @@ function BlogIndex() {
   const [totalPages, setTotalPages] = useState(0);
   const [perPage] = useState(5);
 
-  const fetchPosts = async () => {
-    try {
-      // Loading Spinner Starts
-      setIsPending(true);
-      // Fetch posts
-      console.log('Current Page:', currentPage);
-      const fetchedPosts = await wp
-        .posts()
-        .perPage(perPage)
-        .page(currentPage)
-        .get();
-      console.log('First Page:', fetchedPosts);
-
-      setTotalPages(fetchedPosts._paging.totalPages);
-      setPosts(fetchedPosts);
-
-      // Loading Spinner Ends
-      setIsPending(false);
-
-      return fetchedPosts;
-    } catch (e) {
-      // print error
-      console.log(e);
-      return [];
-    }
-  };
-
   useEffect(() => {
+    async function fetchPosts() {
+      try {
+        setIsPending(true);
+        // Fetch posts
+        const fetchedPosts = await wp.posts().perPage(perPage).get();
+        console.log(fetchedPosts);
+
+        setPosts(fetchedPosts);
+        setTotalPages(fetchedPosts._paging.totalPages);
+        setIsPending(false);
+      } catch (e) {
+        // print error
+        console.log(e);
+        return [];
+      }
+    }
+
     fetchPosts();
-  }, [currentPage]);
+  }, []);
 
   const deletePost = async (id) => {
     setIsPending(true);
@@ -65,27 +55,23 @@ function BlogIndex() {
       });
   };
 
-  const handleNextPage = async () => {
-    setCurrentPage((prev) => prev + 1);
-    await fetchPosts();
-  };
+  const handlePageChange = async (page) => {
+    setIsPending(true);
+    setCurrentPage(page);
+    console.log('Current Page', page);
 
-  const handlePrevPage = async () => {
-    setCurrentPage((prev) => prev - 1);
-    await fetchPosts();
+    const nextPage = await wp.posts().perPage(perPage).page(page);
+
+    setPosts(nextPage);
+    setIsPending(false);
   };
 
   return (
-    <div>
+    <Page wide={false} pageTitle="LoadMore Page">
       <section className="list-group">
         {isPending && (
           <div className="text-center">
-            <Loader type="ThreeDots" color="red" height={100} width={100} />
-            {/* <Loader type="Watch" color="red" height={100} width={100} /> */}
-            {/* <Loader type="RevolvingDot" color="red" height={100} width={100} /> */}
-            {/* <Loader type="Puff" color="red" height={100} width={100} /> */}
-            {/* <Loader type="Circles" color="red" height={100} width={100} /> */}
-            {/* <Loader type="BallTriangle" color="red" height={100} width={100} /> */}
+            <Loader type="Puff" color="red" height={100} width={100} />
           </div>
         )}
         {posts &&
@@ -114,14 +100,13 @@ function BlogIndex() {
             </article>
           ))}
       </section>
-      <NextPrevPagination
-        currentPage={currentPage}
+      <NumericPagination
         totalPages={totalPages}
-        onNextPage={handleNextPage}
-        onPrevPage={handlePrevPage}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
       />
-    </div>
+    </Page>
   );
 }
 
-export default BlogIndex;
+export default NumericPage;
