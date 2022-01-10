@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Container } from 'react-bootstrap';
 import './Page.scss';
 
-function Page({ wide, pageTitle, children }) {
+function Page({ wide, pageTitle, className, children }) {
   // Setting up mandatory Page Title in the browser
   useEffect(() => {
     document.title = `${pageTitle} | React Demo`;
@@ -14,13 +14,13 @@ function Page({ wide, pageTitle, children }) {
   // it is not full-width
   if (wide) {
     return (
-      <div className="page">
+      <div className={className}>
         <Container fluid>{children}</Container>
       </div>
     );
   } else {
     return (
-      <div className="page">
+      <div className={className}>
         <Container>{children}</Container>
       </div>
     );

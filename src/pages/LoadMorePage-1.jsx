@@ -4,9 +4,6 @@ import { Link } from 'react-router-dom';
 import WPAPI from 'wpapi';
 import parse from 'html-react-parser';
 import Page from '../components/layouts/Page';
-import LoadMorePagination, {
-  loadMorePosts,
-} from '../components/general/LoadMorePagination';
 
 function LoadMorePage() {
   // Create WPAPI instance and add endpoint to /wp-json
@@ -60,16 +57,36 @@ function LoadMorePage() {
       });
   };
 
-  const handleLoadmore = async () => {
-    console.log('load more button clicked');
+  const loadMorePosts = async (pageNumber) => {
     // Loading Spinner Starts
     setIsPending(true);
-    console.log('Handling Load More');
-    const snapShot = await loadMorePosts(pageNumber, perPage, totalPages);
-    setPosts([...posts, ...snapShot.newPosts]);
-    setPageNumber(snapShot.newPageNumber);
+
+    const request = wp.posts();
+    console.log('Request - loadMorePosts:', request);
+    console.log('Current Pg - loadMorePosts:', pageNumber);
+
+    if (pageNumber > 1) {
+      request.perPage(perPage).page(pageNumber);
+    }
+
+    const newPosts = await request.get();
+    console.log('New Posts - loadMorePosts:', newPosts);
+
     // Loading Spinner Starts
     setIsPending(false);
+
+    return {
+      newPosts,
+      newPageNumber: totalPages > pageNumber ? pageNumber + 1 : null,
+    };
+  };
+  const handleLoadmore = async () => {
+    console.log('Handling Load More');
+    const snapShot = await loadMorePosts(pageNumber);
+
+    setPosts([...posts, ...snapShot.newPosts]);
+
+    setPageNumber(snapShot.newPageNumber);
   };
 
   return (
@@ -107,7 +124,11 @@ function LoadMorePage() {
         </div>
       )}
       {totalPages > 1 && pageNumber && (
-        <LoadMorePagination onLoadMore={handleLoadmore} />
+        <section className="loadmore text-center">
+          <button className="btn btn-info mt-3 mb-5" onClick={handleLoadmore}>
+            Load More...
+          </button>
+        </section>
       )}
     </Page>
   );
