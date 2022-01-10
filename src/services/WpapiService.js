@@ -1,5 +1,6 @@
 import WPAPI from 'wpapi';
 import config from '../config.json';
+import * as Sentry from '@sentry/react';
 
 // Create WPAPI instance and add endpoint to /wp-json
 const wp = new WPAPI({
@@ -15,6 +16,7 @@ export const fetchPosts = async () => {
     return recentPosts;
   } catch (error) {
     console.log('fetchPosts Errors:', error);
+    Sentry.captureException(error);
   }
 };
 

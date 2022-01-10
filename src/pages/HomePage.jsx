@@ -7,6 +7,8 @@ import BlogIndex from '../components/BlogIndex';
 function HomePage() {
   return (
     <Page wide={true} pageTitle="HeadLess WP">
+      {/* <button onClick={WTF_ISSUE_1}>Break the world</button>; */}
+
       <Row className="justify-content-center">
         <Col sm={12}>
           <Content width="w-100" cssClassNames="bg-light">

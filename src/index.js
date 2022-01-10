@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import logger from './services/LoggerService';
+import Logger from './services/LoggerService';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 
-// logger();
+// Error Logging & Performance Monitoring System w/ Sentry.io
+Logger();
 
 ReactDOM.render(
   <React.StrictMode>

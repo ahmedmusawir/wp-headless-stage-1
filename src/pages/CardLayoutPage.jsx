@@ -4,7 +4,7 @@ import { Row, Col } from 'react-bootstrap';
 import Content from '../components/layouts/Content';
 import { fetchPosts } from '../services/WpapiService';
 
-function MasonryPage() {
+function CardLayoutPage() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -25,4 +25,4 @@ function MasonryPage() {
   );
 }
 
-export default MasonryPage;
+export default CardLayoutPage;

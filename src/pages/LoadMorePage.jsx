@@ -29,8 +29,8 @@ function LoadMorePage() {
         const fetchedPosts = await wp.posts().perPage(perPage).page(1).get();
         console.log('First Page:', fetchedPosts);
 
-        setTotalPages(fetchedPosts._paging.totalPages);
         setPosts(fetchedPosts);
+        setTotalPages(fetchedPosts._paging.totalPages);
 
         // Loading Spinner Ends
         setIsPending(false);
@@ -62,7 +62,7 @@ function LoadMorePage() {
     setIsPending(true);
 
     const request = wp.posts();
-    // console.log('Request - loadMorePosts:', request);
+    console.log('Request - loadMorePosts:', request);
     console.log('Current Pg - loadMorePosts:', pageNumber);
 
     if (pageNumber > 1) {
@@ -91,7 +91,6 @@ function LoadMorePage() {
 
   return (
     <Page wide={false} pageTitle="LoadMore Page">
-      {/* <button onClick={WTF_ISSUE_3}>Break the world</button>; */}
       <section className="list-group">
         {posts &&
           posts.map((post) => (

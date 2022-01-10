@@ -38,8 +38,6 @@ function NextPrevPage() {
 
       // Loading Spinner Ends
       setIsPending(false);
-
-      return fetchedPosts;
     } catch (e) {
       // print error
       console.log(e);

@@ -21,9 +21,9 @@ function MainNavbar(props) {
             <Nav.Link as={Link} to="/loadmore">
               Load More Pagination
             </Nav.Link>
-            <Nav.Link as={Link} to="/masonry">
-              Masonry
-            </Nav.Link>
+            {/* <Nav.Link as={Link} to="/card-layout">
+              Card Layout
+            </Nav.Link> */}
           </Nav>
         </Navbar.Collapse>
       </Container>
