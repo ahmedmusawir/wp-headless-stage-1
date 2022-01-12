@@ -8,8 +8,7 @@ import { fetchPosts, conf } from '../services/HttpService';
 import LoadMorePagination, {
   loadMorePosts,
 } from '../components/general/LoadMorePagination';
-import Masonry from 'react-masonry-css';
-import './CardLayoutPage.scss';
+import masonry from 'masonry-layout';
 
 function CardLayoutPage() {
   const [posts, setPosts] = useState([]);
@@ -17,13 +16,6 @@ function CardLayoutPage() {
   const [pageNumber, setPageNumber] = useState(2);
   const [totalPages, setTotalPages] = useState(0);
   const [perPage] = useState(conf.perPage);
-  // MASONRY BREAKING POINT
-  const breakpointColumnsObj = {
-    default: 4,
-    1100: 3,
-    700: 2,
-    500: 1,
-  };
 
   useEffect(() => {
     // Loading Spinner Starts
@@ -57,51 +49,38 @@ function CardLayoutPage() {
   };
 
   return (
-    <Page wide={true} pageTitle="Movie Form" className="mb-5 mx-5">
+    <Page wide={true} pageTitle="Movie Form" className="mb-5">
       <Row className="justify-content-center">
         <Col sm={12}>
-          <Content
-            width="w-100"
-            cssClassNames="bg-light mt-2 d-flex justify-content-between"
-          >
-            <div className="text-block">
-              <h1>Card Layout Page</h1>
-              <h4>React Bootstrap 5 ...</h4>
-            </div>
-            <div className="button-block">
-              <button className="btn btn-info btn-lg px-5 py-4">
-                Create Post
-              </button>
-            </div>
+          <Content width="w-100" cssClassNames="bg-light">
+            <h1>Card Layout Page</h1>
+            <h4>React Bootstrap 5 ...</h4>
           </Content>
         </Col>
       </Row>
-      <Row>
-        <Content width="w-100" cssClassNames="mt-2">
-          <Masonry
-            breakpointCols={breakpointColumnsObj}
-            className="my-masonry-grid"
-            columnClassName="my-masonry-grid_column"
-          >
-            {/* array of JSX items */}
-            {posts &&
-              posts.map((post) => (
-                <Col key={post.id}>
-                  <Card className="">
-                    <Card.Img variant="top" src={post.featured_full} />
-                    <Card.Body>
-                      <Card.Title>{parse(post.title.rendered)}</Card.Title>
-                      <div className="card-text">
-                        {parse(post.excerpt.rendered)}
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
-              ))}
-          </Masonry>
-        </Content>
+      <Row xs={1} md={2} lg={3} className="g-4">
+        {/* <div
+        className="row justify-content-center"
+        data-masonry={{ percentPosition: true }}
+        style={{ position: 'relative', height: '690px' }}
+      > */}
+        {posts &&
+          posts.map((post) => (
+            <Col key={post.id}>
+              <Card className="mb-3">
+                <Card.Img variant="top" src={post.featured_full} />
+                <Card.Body>
+                  <Card.Title>{parse(post.title.rendered)}</Card.Title>
+                  {/* <Card.Text>{post.excerpt.rendered}</Card.Text> */}
+                  <div className="card-text">
+                    {parse(post.excerpt.rendered)}
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
       </Row>
-
+      {/* </div> */}
       {isPending && (
         <div className="text-center">
           <Loader type="ThreeDots" color="red" height={100} width={100} />
