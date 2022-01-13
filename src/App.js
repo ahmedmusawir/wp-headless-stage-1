@@ -9,6 +9,7 @@ import NumericPage from './pages/NumericPage';
 import LoadMorePage from './pages/LoadMorePage';
 import CardLayoutPage from './pages/CardLayoutPage';
 import './App.scss';
+import PostCreatePage from './pages/PostCreatePage';
 
 function App(props) {
   return (
@@ -30,6 +31,12 @@ function App(props) {
           </Route>
           <Route exact path="/card-layout">
             <CardLayoutPage />
+          </Route>
+          <Route exact path="/masonry-layout">
+            <CardLayoutPage />
+          </Route>
+          <Route exact path="/create-post">
+            <PostCreatePage />
           </Route>
           <Route exact path="/single-post/:id">
             <SinglePostPage />

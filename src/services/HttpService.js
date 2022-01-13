@@ -13,7 +13,7 @@ export const fetchPosts = async () => {
   console.log('Config Service:', config);
   try {
     const recentPosts = await wp.posts().perPage(config.perPage).get();
-    console.log('Recent Posts from WP-API Service:', recentPosts);
+    console.log('Recent Posts from HTTP Service:', recentPosts);
     return recentPosts;
   } catch (error) {
     console.log('fetchPosts Errors:', error);
