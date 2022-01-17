@@ -8,7 +8,6 @@ import { fetchPosts, conf } from '../services/HttpService';
 import LoadMorePagination, {
   loadMorePosts,
 } from '../components/general/LoadMorePagination';
-import masonry from 'masonry-layout';
 
 function CardLayoutPage() {
   const [posts, setPosts] = useState([]);
@@ -59,11 +58,6 @@ function CardLayoutPage() {
         </Col>
       </Row>
       <Row xs={1} md={2} lg={3} className="g-4">
-        {/* <div
-        className="row justify-content-center"
-        data-masonry={{ percentPosition: true }}
-        style={{ position: 'relative', height: '690px' }}
-      > */}
         {posts &&
           posts.map((post) => (
             <Col key={post.id}>

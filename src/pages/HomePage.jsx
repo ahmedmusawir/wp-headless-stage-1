@@ -1,29 +1,18 @@
 import React from 'react';
 import Page from '../components/layouts/Page';
-import { Row, Col } from 'react-bootstrap';
 import Content from '../components/layouts/Content';
+import { Row, Col } from 'react-bootstrap';
 import BlogIndex from '../components/BlogIndex';
+import Header from '../components/general/Header';
 
 function HomePage() {
   return (
     <Page wide={true} pageTitle="HeadLess WP">
-      {/* <button onClick={WTF_ISSUE_1}>Break the world</button>; */}
-
+      <Header />
       <Row className="justify-content-center">
         <Col sm={12}>
           <Content width="w-100" cssClassNames="bg-light">
-            <h1>React CRUD w/ HeadLess WP </h1>
-          </Content>
-        </Col>
-        <Col sm={12}>
-          <Content width="w-100" cssClassNames="bg-light">
-            {/* <BlogIndex /> */}
-            <h2>Let's Handle Pagination w/ WPAPI in REACT</h2>
-            <ul className="list-group">
-              <li className="list-group-item">Next/Prev Pagination</li>
-              <li className="list-group-item">Numeric Pagination</li>
-              <li className="list-group-item">Load More Pagination</li>
-            </ul>
+            <BlogIndex />
           </Content>
         </Col>
       </Row>

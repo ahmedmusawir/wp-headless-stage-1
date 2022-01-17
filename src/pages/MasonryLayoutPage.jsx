@@ -3,28 +3,22 @@ import Page from '../components/layouts/Page';
 import Loader from 'react-loader-spinner';
 import { Row, Col, Card } from 'react-bootstrap';
 import Content from '../components/layouts/Content';
-import WPAPI from 'wpapi';
 import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';
+import { fetchPosts, conf } from '../services/HttpService';
 import LoadMorePagination, {
   loadMorePosts,
 } from '../components/general/LoadMorePagination';
 import Masonry from 'react-masonry-css';
-import './BlogIndex.scss';
+import './MasonryLayoutPage.scss';
 import 'animate.css';
 
-function BlogIndex() {
-  const wp = new WPAPI({
-    endpoint: 'http://localhost:10004/wp-json',
-    username: 'cgteam',
-    password: '8gLw rmzE hQhZ av4L 1ljg x119',
-  });
-
+function MasonryLayoutPage() {
   const [posts, setPosts] = useState([]);
   const [isPending, setIsPending] = useState(false);
   const [pageNumber, setPageNumber] = useState(2);
   const [totalPages, setTotalPages] = useState(0);
-  const [perPage] = useState(5);
+  const [perPage] = useState(conf.perPage);
   // MASONRY BREAKING POINT
   const breakpointColumnsObj = {
     default: 4,
@@ -33,29 +27,23 @@ function BlogIndex() {
     700: 1,
   };
 
-  const fetchPosts = async () => {
-    try {
-      // Loading Spinner Starts
-      setIsPending(true);
-      // Fetch posts
-      console.log('Current Page:', pageNumber);
-      const fetchedPosts = await wp.posts().perPage(perPage).page(1).get();
-      console.log('First Page:', fetchedPosts);
+  useEffect(() => {
+    // Loading Spinner Starts
+    setIsPending(true);
 
-      setTotalPages(fetchedPosts._paging.totalPages);
-      setPosts(fetchedPosts);
+    // Collecting Data from Http Service
+    const getPosts = async () => {
+      const gotPosts = await fetchPosts();
+      // Updating Posts
+      setPosts(gotPosts);
+      // Updating Total Pages
+      setTotalPages(gotPosts._paging.totalPages);
 
       // Loading Spinner Ends
       setIsPending(false);
-    } catch (e) {
-      // print error
-      console.log(e);
-      return [];
-    }
-  };
+    };
 
-  useEffect(() => {
-    fetchPosts();
+    getPosts();
   }, []);
 
   const handleLoadmore = async () => {
@@ -71,7 +59,7 @@ function BlogIndex() {
   };
 
   return (
-    <>
+    <Page wide={true} pageTitle="Movie Form" className="mb-5 mx-5">
       <Row className="justify-content-center">
         <Col sm={12}>
           <Content
@@ -79,8 +67,8 @@ function BlogIndex() {
             cssClassNames="bg-light mt-2 d-flex justify-content-between"
           >
             <div className="text-block">
-              <h3>Blog Index w/ Masonry Layout</h3>
-              <h5>And Cards from React Bootstrap 5 ...</h5>
+              <h1>Masonry Layout Page</h1>
+              <h4>And Cards from React Bootstrap 5 ...</h4>
             </div>
             <div className="button-block">
               <Link
@@ -132,8 +120,8 @@ function BlogIndex() {
       {totalPages > 1 && pageNumber && (
         <LoadMorePagination onLoadMore={handleLoadmore} />
       )}
-    </>
+    </Page>
   );
 }
 
-export default BlogIndex;
+export default MasonryLayoutPage;

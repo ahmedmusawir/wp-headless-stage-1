@@ -4,8 +4,8 @@ import { Navbar, Nav, NavDropdown, Container } from 'react-bootstrap';
 
 function MainNavbar(props) {
   return (
-    <Navbar bg="light" expand="md">
-      <Container>
+    <Navbar bg="dark" variant="dark" expand="md">
+      <Container fluid>
         <Navbar.Brand as={Link} to="/">
           React & WP
         </Navbar.Brand>
@@ -21,8 +21,8 @@ function MainNavbar(props) {
             <Nav.Link as={Link} to="/loadmore">
               Load More Pagination
             </Nav.Link>
-            <Nav.Link as={Link} to="/card-layout">
-              Card Layout
+            <Nav.Link as={Link} to="/masonry-layout">
+              Masonry Layout
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>

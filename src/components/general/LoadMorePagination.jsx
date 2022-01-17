@@ -26,7 +26,10 @@ export const loadMorePosts = async (pageNumber, perPage, totalPages) => {
 function LoadMorePagination({ onLoadMore }) {
   return (
     <section className="loadmore text-center">
-      <button className="btn btn-info mt-3 mb-5" onClick={onLoadMore}>
+      <button
+        className="btn btn-info btn-lg mt-3 mb-5 px-5 py-4"
+        onClick={onLoadMore}
+      >
         Load More...
       </button>
     </section>

@@ -4,12 +4,14 @@ import Loader from 'react-loader-spinner';
 import { Row, Col, Card } from 'react-bootstrap';
 import Content from '../components/layouts/Content';
 import parse from 'html-react-parser';
+import { Link } from 'react-router-dom';
 import { fetchPosts, conf } from '../services/HttpService';
 import LoadMorePagination, {
   loadMorePosts,
 } from '../components/general/LoadMorePagination';
 import Masonry from 'react-masonry-css';
 import './CardLayoutPage.scss';
+import 'animate.css';
 
 function CardLayoutPage() {
   const [posts, setPosts] = useState([]);
@@ -20,9 +22,9 @@ function CardLayoutPage() {
   // MASONRY BREAKING POINT
   const breakpointColumnsObj = {
     default: 4,
-    1100: 3,
-    700: 2,
-    500: 1,
+    1500: 3,
+    1100: 2,
+    700: 1,
   };
 
   useEffect(() => {
@@ -69,9 +71,12 @@ function CardLayoutPage() {
               <h4>React Bootstrap 5 ...</h4>
             </div>
             <div className="button-block">
-              <button className="btn btn-info btn-lg px-5 py-4">
+              <Link
+                to={'create-post'}
+                className="btn btn-info btn-lg px-5 py-4"
+              >
                 Create Post
-              </button>
+              </Link>
             </div>
           </Content>
         </Col>
@@ -86,16 +91,22 @@ function CardLayoutPage() {
             {/* array of JSX items */}
             {posts &&
               posts.map((post) => (
-                <Col key={post.id}>
-                  <Card className="">
-                    <Card.Img variant="top" src={post.featured_full} />
-                    <Card.Body>
-                      <Card.Title>{parse(post.title.rendered)}</Card.Title>
-                      <div className="card-text">
-                        {parse(post.excerpt.rendered)}
-                      </div>
-                    </Card.Body>
-                  </Card>
+                <Col
+                  key={post.id}
+                  // className="animate__animated animate__slideInUp"
+                  className="animate__animated animate__lightSpeedInRight"
+                >
+                  <Link to={`/single-post/${post.id}`}>
+                    <Card>
+                      <Card.Img variant="top" src={post.featured_full} />
+                      <Card.Body>
+                        <Card.Title>{parse(post.title.rendered)}</Card.Title>
+                        <div className="card-text">
+                          {parse(post.excerpt.rendered)}
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Link>
                 </Col>
               ))}
           </Masonry>

@@ -10,6 +10,7 @@ import LoadMorePage from './pages/LoadMorePage';
 import CardLayoutPage from './pages/CardLayoutPage';
 import './App.scss';
 import PostCreatePage from './pages/PostCreatePage';
+import MasonryLayoutPage from './pages/MasonryLayoutPage';
 
 function App(props) {
   return (
@@ -29,8 +30,8 @@ function App(props) {
           <Route exact path="/loadmore">
             <LoadMorePage />
           </Route>
-          <Route exact path="/card-layout">
-            <CardLayoutPage />
+          <Route exact path="/masonry-layout">
+            <MasonryLayoutPage />
           </Route>
           <Route exact path="/masonry-layout">
             <CardLayoutPage />

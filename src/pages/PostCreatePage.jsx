@@ -24,9 +24,6 @@ function PostCreatePage() {
     let newPost = '';
     // STARTING LOADING SPINNER
     setIsPending(true);
-    // console.log('TITLE: ', title);
-    // console.log('CONTENT: ', content);
-    // console.log('IMAGE: ', imageUrl);
 
     try {
       // UPLOADING IMAGE
@@ -55,7 +52,7 @@ function PostCreatePage() {
       // POST CREATION SUCCESS
       setIsPending(false);
       // SENDING USER TO BLOGINDEX PAGE
-      history.push('/card-layout');
+      history.push('/');
     } catch (error) {
       console.log('POST CREATION ERROR: ', error);
     }

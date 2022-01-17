@@ -48,10 +48,7 @@ function BlogSingle({ postId }) {
           <article key={post.id} className="list-group-item">
             <div className="mb-2 row">
               <div className="col-sm-12">
-                <Link
-                  className="btn btn-warning float-right"
-                  to={'/card-layout'}
-                >
+                <Link className="btn btn-warning float-right" to={'/'}>
                   Back
                 </Link>
 
@@ -61,7 +58,11 @@ function BlogSingle({ postId }) {
               </div>
               <div className="col-sm-12">
                 <figure>
-                  <img src={post.featured_full} className="w-100" alt="" />
+                  <img
+                    src={post.featured_full}
+                    className="w-100 animate__animated animate__zoomIn"
+                    alt=""
+                  />
                 </figure>
               </div>
               <div className="col-sm-12">
