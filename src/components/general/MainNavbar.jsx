@@ -12,7 +12,10 @@ function MainNavbar(props) {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
-            <Nav.Link as={Link} to="/nextprev">
+            <Nav.Link as={Link} to="/sample-page">
+              Sample Page
+            </Nav.Link>
+            {/* <Nav.Link as={Link} to="/nextprev">
               Next/Prev Pagination
             </Nav.Link>
             <Nav.Link as={Link} to="/numeric">
@@ -23,7 +26,7 @@ function MainNavbar(props) {
             </Nav.Link>
             <Nav.Link as={Link} to="/masonry-layout">
               Masonry Layout
-            </Nav.Link>
+            </Nav.Link> */}
           </Nav>
         </Navbar.Collapse>
       </Container>

@@ -78,13 +78,14 @@ function BlogIndex() {
             width="w-100"
             cssClassNames="bg-light mt-2 d-flex justify-content-between"
           >
+            {/* THE FOLLOWING DIVS ARE FOR FLEX LAYOUT */}
             <div className="text-block">
               <h3>Blog Index w/ Masonry Layout</h3>
               <h5>And Cards from React Bootstrap 5 ...</h5>
             </div>
             <div className="button-block">
               <Link
-                to={'create-post'}
+                to={'create-post-page'}
                 className="btn btn-info btn-lg px-5 py-4"
               >
                 Create Post

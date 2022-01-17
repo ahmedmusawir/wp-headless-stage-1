@@ -3,6 +3,8 @@ import Loader from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
 import WPAPI from 'wpapi';
 import parse from 'html-react-parser';
+import { Row, Col } from 'react-bootstrap';
+import Content from '../components/layouts/Content';
 
 function BlogSingle({ postId }) {
   // Create WPAPI instance and add endpoint to /wp-json
@@ -45,31 +47,63 @@ function BlogSingle({ postId }) {
       )}
       <section className="list-group">
         {post && (
-          <article key={post.id} className="list-group-item">
-            <div className="mb-2 row">
-              <div className="col-sm-12">
-                <Link className="btn btn-warning float-right" to={'/'}>
-                  Back
-                </Link>
-
+          <>
+            <Row className="justify-content-center">
+              <Col sm={12}>
+                <Content
+                  width="w-100"
+                  cssClassNames="bg-light mt-2 d-flex justify-content-between"
+                >
+                  {/* THE FOLLOWING DIVS ARE FOR FLEX LAYOUT */}
+                  <div className="text-block">
+                    <h3>Single Post Page</h3>
+                    <h5>And Cards from React Bootstrap 5 ...</h5>
+                  </div>
+                  <div className="button-block">
+                    <Link
+                      // to={{
+                      //   pathname: '/update-post-page',
+                      //   state: { post: 'something' },
+                      // }}
+                      to={'/update-post-page/' + postId}
+                      className="btn btn-info btn-lg px-5 py-4"
+                    >
+                      Edit Post
+                    </Link>
+                  </div>
+                </Content>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={12} md={12} lg={6}>
+                {post.featured_full ? (
+                  <figure>
+                    <img
+                      src={post.featured_full}
+                      className="w-100 animate__animated animate__zoomIn"
+                      alt=""
+                    />
+                  </figure>
+                ) : (
+                  <figure>
+                    <img
+                      src="https://picsum.photos/id/272/600/400"
+                      className="w-100 animate__animated animate__zoomIn"
+                      alt=""
+                    />
+                  </figure>
+                )}
+              </Col>
+              <Col sm={12} md={12} lg={6}>
                 <h1 className="">{parse(post.title.rendered)} </h1>
                 <span className="badge badge-primary">Post ID: {post.id}</span>
                 <hr className="bg-primary" />
-              </div>
-              <div className="col-sm-12">
-                <figure>
-                  <img
-                    src={post.featured_full}
-                    className="w-100 animate__animated animate__zoomIn"
-                    alt=""
-                  />
-                </figure>
-              </div>
-              <div className="col-sm-12">
-                <span className="mt-3">{parse(post.content.rendered)} </span>
-              </div>
-            </div>
-          </article>
+                <span className="mt-3 clearfix">
+                  {parse(post.content.rendered)}{' '}
+                </span>
+              </Col>
+            </Row>
+          </>
         )}
       </section>
     </div>
