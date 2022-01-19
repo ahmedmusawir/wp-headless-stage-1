@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import './index.css';
 
 // Error Logging & Performance Monitoring System w/ Sentry.io
-Logger();
+// Logger();
 
 ReactDOM.render(
   <React.StrictMode>

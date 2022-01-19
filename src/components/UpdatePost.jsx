@@ -8,14 +8,12 @@ import parse from 'html-react-parser';
 import WPAPI from 'wpapi';
 
 function UpdatePost({ postId }) {
-  // const [post, setPost] = useState('');
   const [title, setTitle] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [oldImage, setOldImage] = useState('');
   const [content, setContent] = useState('');
   const [isPending, setIsPending] = useState(false);
   const history = useHistory();
-
-  console.log('PostId via param:', postId);
 
   var wp = new WPAPI({
     endpoint: 'http://localhost:10004/wp-json',
@@ -24,6 +22,7 @@ function UpdatePost({ postId }) {
   });
 
   useEffect(() => {
+    console.log('PostId via param:', postId);
     const fetchSinglePost = async () => {
       try {
         // Loading Spinner Starts
@@ -34,7 +33,7 @@ function UpdatePost({ postId }) {
         // setPost(singlePost);
         setTitle(singlePost.title.rendered);
         setContent(singlePost.content.rendered);
-        setImageUrl(singlePost.featured_thumb);
+        setOldImage(singlePost.featured_thumb);
 
         // Loading Spinner Ends
         setIsPending(false);
@@ -49,45 +48,52 @@ function UpdatePost({ postId }) {
 
   const handleInsertPost = async () => {
     let uploadedImage = '';
-    let newPost = '';
+    let updatedPost = '';
     // STARTING LOADING SPINNER
     setIsPending(true);
 
     console.log('Image URL:', imageUrl);
 
-    try {
-      // UPLOADING IMAGE
-      // uploadedImage = await wp.media().file(imageUrl).create({
-      //   title: 'Image Loaded by React HeadLess',
-      //   alt_text: 'an image of something awesome',
-      //   caption: 'This is the caption text',
-      //   description: 'More explanatory information',
-      // });
-    } catch (error) {
-      console.log('IMAGE UPLOAD ERROR: ', error);
-    }
+    if (imageUrl) {
+      try {
+        // UPLOADING IMAGE
+        uploadedImage = await wp.media().file(imageUrl).create({
+          title: 'Image Loaded by React HeadLess',
+          alt_text: 'an image of something awesome',
+          caption: 'This is the caption text',
+          description: 'More explanatory information',
+        });
 
-    console.log('Uploaded Image ID:', uploadedImage.id);
+        console.log('Uploaded Image ID:', uploadedImage.id);
+      } catch (error) {
+        console.log('IMAGE UPLOAD ERROR: ', error);
+      }
+    } else {
+      setImageUrl(null);
+    }
 
     try {
       // CREATING NEW POST W FEATURED IMAGE
-      // newPost = await wp.posts().create({
-      //   title: title,
-      //   content: content,
-      //   featured_media: uploadedImage.id,
-      //   categories: [157, 30],
-      //   tags: [374, 375],
-      //   status: 'publish',
-      // });
+      updatedPost = await wp
+        .posts()
+        .id(postId)
+        .update({
+          title: title,
+          content: content,
+          featured_media: uploadedImage.id,
+          categories: [157, 30],
+          tags: [374, 375],
+          status: 'publish',
+        });
       // POST CREATION SUCCESS
       setIsPending(false);
       // SENDING USER TO BLOGINDEX PAGE
-      // history.push('/');
+      history.push('/');
     } catch (error) {
       console.log('POST CREATION ERROR: ', error);
     }
 
-    console.log('Newly Created Post: ', newPost);
+    console.log('Newly Created Post: ', updatedPost);
   };
 
   return (
@@ -114,13 +120,27 @@ function UpdatePost({ postId }) {
             <input
               type="file"
               name="featured-image"
-              id="featured-image"
+              id="featured"
               className="form-control mb-3"
-              onChange={(e) => setImageUrl(e.target.files[0])}
+              onChange={(e) => {
+                const [file] = e.target.files;
+                const desktopImg = document.getElementById('desktop-img');
+                if (file) {
+                  desktopImg.src = URL.createObjectURL(file);
+                  console.log('LOCAL IMAGE', desktopImg.src);
+                }
+                setImageUrl(e.target.files[0]);
+              }}
             />
             <figure>
-              {/* <h6>Current Featured Image</h6> */}
-              <img src={imageUrl} alt="" />
+              {/* DISPLAY Featured Image</h6> */}
+              <img
+                id="desktop-img"
+                src={oldImage}
+                alt=""
+                width={150}
+                height={150}
+              />
             </figure>
             <textarea
               name="content"
