@@ -5,14 +5,21 @@ import Content from '../layouts/Content';
 import { Row, Col } from 'react-bootstrap';
 import Loader from 'react-loader-spinner';
 import parse from 'html-react-parser';
+import Joi from 'joi-browser';
 import WPAPI from 'wpapi';
 
 function FormJoi({ postId }) {
   const [title, setTitle] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [content, setContent] = useState('');
-  // const [oldImage, setOldImage] = useState('');
-  // const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState('');
+  const [oldImage, setOldImage] = useState('');
+  const [isPending, setIsPending] = useState(false);
+  const [data, setData] = useState({
+    title: '',
+    content: '',
+    imageUrl: '',
+  });
   // const history = useHistory();
 
   // var wp = new WPAPI({
@@ -50,7 +57,7 @@ function FormJoi({ postId }) {
     // STARTING LOADING SPINNER
     // setIsPending(true);
 
-    console.log('Image URL:', imageUrl);
+    // console.log('Image URL:', imageUrl);
 
     // if (imageUrl) {
     //   try {
@@ -94,74 +101,98 @@ function FormJoi({ postId }) {
     console.log('Newly Created Post: ', updatedPost);
   };
 
+  const schema = {
+    title: Joi.string().required(),
+    content: Joi.string().required(),
+    imageUrl: Joi.object().allow(),
+  };
+
+  const validate = () => {
+    const options = { abortEarly: false };
+    const result = Joi.validate(data, schema, options);
+    console.log('JOI RESULT:', result);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const errors = validate();
+
+    console.log('Submitted', data);
+  };
+
   return (
     <Page wide={true} pageTitle="Movie Form">
       <Row className="justify-content-center">
-        <Col sm={12}>
+        {/* <Col sm={12}>
           <Content width="w-75" cssClassNames="bg-light mt-2 mx-auto">
             <h3>Post Update Page</h3>
             <h5>This time with Image ...</h5>
           </Content>
-        </Col>
+        </Col> */}
       </Row>
       <Row className="justify-content-center">
         <Col sm={12}>
           <Content width="w-75" cssClassNames="mt-2 mx-auto">
-            <input
-              type="text"
-              name="title"
-              id="title"
-              className="form-control mb-3"
-              value={parse(title)}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <input
-              type="file"
-              name="featured-image"
-              id="featured"
-              className="form-control mb-3"
-              onChange={(e) => {
-                const [file] = e.target.files;
-                const desktopImg = document.getElementById('desktop-img');
-                if (file) {
-                  desktopImg.src = URL.createObjectURL(file);
-                  console.log('LOCAL IMAGE', desktopImg.src);
-                }
-                setImageUrl(e.target.files[0]);
-              }}
-            />
-            <figure>
-              {/* DISPLAY Featured Image</h6> */}
-              {/* <img
-                id="desktop-img"
-                src={oldImage}
-                alt=""
-                width={150}
-                height={150}
-              /> */}
-            </figure>
-            <textarea
-              name="content"
-              id="content"
-              cols="30"
-              rows="10"
-              className="form-control mb-3"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-            ></textarea>
-            <button
-              className="btn btn-info btn-block btn-lg"
-              onClick={handleInsertPost}
-            >
-              Update Now!
-            </button>
+            <form onSubmit={handleSubmit} className="form">
+              <input
+                type="text"
+                name="title"
+                id="title"
+                className="form-control mb-3"
+                value={parse(data.title)}
+                onChange={(e) => setData({ ...data, title: e.target.value })}
+              />
+              <input
+                type="file"
+                name="featured-image"
+                id="featured"
+                className="form-control mb-3"
+                // value={data.imageUrl}
+                onChange={(e) => {
+                  const [file] = e.target.files;
+                  const desktopImg = document.getElementById('desktop-img');
+                  if (file) {
+                    desktopImg.src = URL.createObjectURL(file);
+                    console.log('LOCAL IMAGE', desktopImg.src);
+                  }
+                  setData({ ...data, imageUrl: e.target.files[0] });
+                  console.log('IMAGE URL: ', imageUrl);
+                }}
+              />
+              <figure>
+                {/* DISPLAY Featured Image</h6> */}
+                <img
+                  id="desktop-img"
+                  src={oldImage}
+                  alt=""
+                  width={150}
+                  height={150}
+                />
+              </figure>
+              <textarea
+                name="content"
+                id="content"
+                cols="30"
+                rows="10"
+                className="form-control mb-3"
+                value={data.content}
+                onChange={(e) => setData({ ...data, content: e.target.value })}
+              ></textarea>
+              <button
+                className="btn btn-info btn-block btn-lg"
+                onClick={handleSubmit}
+              >
+                Update Now!
+              </button>
+            </form>
           </Content>
         </Col>
-        {/* {isPending && (
+        {isPending && (
           <div className="text-center">
             <Loader type="ThreeDots" color="red" height={100} width={100} />
           </div>
-        )} */}
+        )}
       </Row>
     </Page>
   );
