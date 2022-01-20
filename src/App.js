@@ -8,6 +8,8 @@ import SamplePage from './pages/SamplePage';
 import CreatePostPage from './pages/CreatePostPage';
 import UpdatePostPage from './pages/UpdatePostPage';
 import './App.scss';
+import FormikPage from './pages/FormikPage';
+import FormJoiPage from './pages/FormJoiPage';
 // import PostCreatePage from './pages/_old/PostCreatePage';
 // import NextPrevPage from './pages/NextPrevPage';
 // import NumericPage from './pages/NumericPage';
@@ -50,6 +52,12 @@ function App(props) {
           </Route>
           <Route exact path="/sample-page">
             <SamplePage />
+          </Route>
+          <Route exact path="/formik-page">
+            <FormikPage />
+          </Route>
+          <Route exact path="/form-joi-page">
+            <FormJoiPage />
           </Route>
           <Route path="/*">
             <NotFound />

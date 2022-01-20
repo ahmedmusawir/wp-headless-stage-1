@@ -15,6 +15,12 @@ function MainNavbar(props) {
             <Nav.Link as={Link} to="/sample-page">
               Sample Page
             </Nav.Link>
+            <Nav.Link as={Link} to="/formik-page">
+              Formik Page
+            </Nav.Link>
+            <Nav.Link as={Link} to="/form-joi-page">
+              Form Joi Page
+            </Nav.Link>
             {/* <Nav.Link as={Link} to="/nextprev">
               Next/Prev Pagination
             </Nav.Link>
