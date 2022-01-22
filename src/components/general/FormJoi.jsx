@@ -12,21 +12,22 @@ function FormJoi({ postId }) {
   const [title, setTitle] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [content, setContent] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState('');
   const [oldImage, setOldImage] = useState('');
   const [isPending, setIsPending] = useState(false);
   const [data, setData] = useState({
     title: '',
     content: '',
     imageUrl: '',
+    fileSize: '',
   });
   // const history = useHistory();
 
-  // var wp = new WPAPI({
-  //   endpoint: 'http://localhost:10004/wp-json',
-  //   username: 'cgteam',
-  //   password: '8gLw rmzE hQhZ av4L 1ljg x119',
-  // });
+  var wp = new WPAPI({
+    endpoint: 'http://localhost:10004/wp-json',
+    username: 'cgteam',
+    password: '8gLw rmzE hQhZ av4L 1ljg x119',
+  });
 
   useEffect(() => {
     const fetchSinglePost = async () => {
@@ -34,7 +35,7 @@ function FormJoi({ postId }) {
       //   // Loading Spinner Starts
       //   setIsPending(true);
       //   // Fetch Single Post
-      //   const singlePost = await wp.posts().id(postId).get();
+      //   const singlePost = await wp.posts().id(324).get();
       //   console.log('Single Post: ', singlePost);
       //   // setPost(singlePost);
       //   setTitle(singlePost.title.rendered);
@@ -101,22 +102,54 @@ function FormJoi({ postId }) {
     console.log('Newly Created Post: ', updatedPost);
   };
 
-  const schema = {
-    title: Joi.string().required(),
-    content: Joi.string().required(),
-    imageUrl: Joi.object().allow(),
-  };
+  // const schema = {
+  //   title: Joi.string()
+  //     .required()
+  //     // .label('Title')
+  //     .message('File is Bigger than 100KB'),
+  //   content: Joi.string().required().label('Content'),
+  //   imageUrl: Joi.object().required().label('Featured Image'),
+  //   fileSize: Joi.number().max(100000),
+  // };
+
+  const schema = Joi.object({
+    title: Joi.string().trim().required().label('Title'),
+    content: Joi.string().required().label('Content'),
+    imageUrl: Joi.object().required().label('Featured Image'),
+    fileSize: Joi.number().max(100000),
+  });
 
   const validate = () => {
+    console.log('IMAGE OBJ IN VALIDATE:', data.imageUrl);
+    // const fileSize = data.imageUrl.size;
     const options = { abortEarly: false };
-    const result = Joi.validate(data, schema, options);
-    console.log('JOI RESULT:', result);
+    const { error } = Joi.validate(data, schema, options);
+    if (!error) return null;
+
+    const errors = {};
+
+    for (let item of error.details) {
+      if (item.path == 'imageUrl') {
+        item.message = 'Featued Image must be an Image File';
+        errors[item.path[0]] = item.message;
+      } else {
+        errors[item.path[0]] = item.message;
+      }
+    }
+    return errors;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('IMAGE URL: ', data.imageUrl);
 
+    // VALIDATING FORM DATA
     const errors = validate();
+    // UPDATING ERRORS CONSTANT
+    setErrors(errors);
+    console.log('ERRORS FROM HANDLE SUBMIT:', errors);
+    // IF ERRORS FOUND RETURN
+    if (errors) return;
 
     console.log('Submitted', data);
   };
@@ -135,17 +168,28 @@ function FormJoi({ postId }) {
         <Col sm={12}>
           <Content width="w-75" cssClassNames="mt-2 mx-auto">
             <form onSubmit={handleSubmit} className="form">
+              <label className="font-weight-bold" htmlFor="title">
+                Title
+              </label>
               <input
                 type="text"
                 name="title"
                 id="title"
+                placeholder="Enter Title"
                 className="form-control mb-3"
                 value={parse(data.title)}
                 onChange={(e) => setData({ ...data, title: e.target.value })}
               />
+              {errors && (
+                <div className="alert alert-danger">{errors['title']}</div>
+              )}
+
+              <label className="font-weight-bold" htmlFor="featured-image">
+                Featured Image:
+              </label>
               <input
                 type="file"
-                name="featured-image"
+                name="imageUrl"
                 id="featured"
                 className="form-control mb-3"
                 // value={data.imageUrl}
@@ -156,10 +200,18 @@ function FormJoi({ postId }) {
                     desktopImg.src = URL.createObjectURL(file);
                     console.log('LOCAL IMAGE', desktopImg.src);
                   }
-                  setData({ ...data, imageUrl: e.target.files[0] });
-                  console.log('IMAGE URL: ', imageUrl);
+                  const currentFileSize = Number(e.target.files[0].size);
+                  setData({
+                    ...data,
+                    imageUrl: e.target.files[0],
+                    fileSize: currentFileSize,
+                  });
                 }}
               />
+              {errors && (
+                <div className="alert alert-danger">{errors['imageUrl']}</div>
+              )}
+
               <figure>
                 {/* DISPLAY Featured Image</h6> */}
                 <img
@@ -170,15 +222,23 @@ function FormJoi({ postId }) {
                   height={150}
                 />
               </figure>
+              <label className="font-weight-bold" htmlFor="content">
+                Content
+              </label>
               <textarea
                 name="content"
                 id="content"
+                placeholder="Enter Content"
                 cols="30"
                 rows="10"
                 className="form-control mb-3"
                 value={data.content}
                 onChange={(e) => setData({ ...data, content: e.target.value })}
               ></textarea>
+              {errors && (
+                <div className="alert alert-danger">{errors['content']}</div>
+              )}
+
               <button
                 className="btn btn-info btn-block btn-lg"
                 onClick={handleSubmit}
