@@ -10,8 +10,8 @@ import WPAPI from 'wpapi';
 function UpdatePost({ postId }) {
   const [title, setTitle] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [oldImage, setOldImage] = useState('');
   const [content, setContent] = useState('');
+  const [oldImage, setOldImage] = useState('');
   const [isPending, setIsPending] = useState(false);
   const history = useHistory();
 

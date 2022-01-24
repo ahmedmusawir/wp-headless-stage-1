@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Page from '../components/layouts/Page';
 import { Row, Col } from 'react-bootstrap';
 import Content from '../components/layouts/Content';
@@ -8,8 +8,6 @@ import UpdatePost from '../components/UpdatePost';
 
 function UpdatePostPage() {
   const { id } = useParams();
-  // const location = useLocation();
-  // console.log('Post in Update Page:', location);
 
   return (
     <Page wide={true} pageTitle="Sample Page">

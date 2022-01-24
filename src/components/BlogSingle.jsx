@@ -61,10 +61,6 @@ function BlogSingle({ postId }) {
                   </div>
                   <div className="button-block">
                     <Link
-                      // to={{
-                      //   pathname: '/update-post-page',
-                      //   state: { post: 'something' },
-                      // }}
                       to={'/update-post-page/' + postId}
                       className="btn btn-info btn-lg px-5 py-4"
                     >
