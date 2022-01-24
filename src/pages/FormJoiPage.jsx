@@ -8,12 +8,13 @@ import FormJoi from '../components/general/FormJoi';
 function FormJoiPage() {
   return (
     <Page wide={true} pageTitle="Sample Page">
-      <Header />
+      {/* <Header /> */}
       <Row className="justify-content-center">
         <Col sm={12}>
           <Content width="w-100" cssClassNames="bg-light mt-2 clearfix">
-            <h3>Moose Form</h3>
-            <h5>JOI Validation</h5>
+            <h3>
+              Moose Form <small>(Joi Validation)</small>
+            </h3>
           </Content>
         </Col>
       </Row>

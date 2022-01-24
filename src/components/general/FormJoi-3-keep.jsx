@@ -1,62 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Page from '../layouts/Page';
 import Content from '../layouts/Content';
 import { Row, Col } from 'react-bootstrap';
+import parse from 'html-react-parser';
 import Joi from 'joi-browser';
 import placeholderImage from '../../img/place-holder.png';
 
-function FormJoi({ postId }) {
-  const [errors, setErrors] = useState('');
-  const [data, setData] = useState({
-    title: '',
-    content: '',
-    imageUrl: '',
-    fileSize: '',
-    imageName: '',
-  });
+function FormJoi() {
+  const [title, setTitle] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [fileSize, setFileSize] = useState('');
+  const [content, setContent] = useState('');
+  const [errors, setErrors] = useState({});
 
-  const schema = Joi.object({
-    title: Joi.string().trim().required().label('Title'),
+  const schema = {
+    title: Joi.string().required().label('Title'),
     content: Joi.string().required().label('Content'),
     imageUrl: Joi.object().required().label('Featured Image'),
     fileSize: Joi.number().max(100000),
-    imageName: Joi.string().trim().required(),
-  });
+  };
 
-  const validate = () => {
-    // console.log('IMAGE OBJ IN VALIDATE:', data.imageUrl);
+  const validate = (data) => {
     const options = { abortEarly: false };
+    // JOI'S ERROR OBJECT
+    // destructuring the Joi default error object
     const { error } = Joi.validate(data, schema, options);
+    // RETURNING NULL HERE CUZ EMPTY OBJECT CANNOT BE CHECKED
+    // It makes the form submit break with [Cannot read property of null]
     if (!error) return null;
 
-    const errors = {};
+    const joiErrors = {};
 
     for (let item of error.details) {
+      // console.log('Item Path Type:', typeof item.path);
       if (item.path[0] === 'imageUrl') {
         item.message = 'Featued Image must be an Image File';
-        errors[item.path[0]] = item.message;
+        joiErrors[item.path[0]] = item.message;
       } else if (item.path[0] === 'fileSize') {
         item.message = 'Featued Image must be smaller than 100 Kelobytes';
-        errors[item.path[0]] = item.message;
+        joiErrors[item.path[0]] = item.message;
       } else {
-        errors[item.path[0]] = item.message;
+        joiErrors[item.path[0]] = item.message;
       }
     }
-    return errors;
+    // console.log('FROM VALIDATE:', joiErrors);
+    return joiErrors;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('IMAGE URL: ', data.imageUrl);
+    console.log('IMAGE URL: ', imageUrl);
+
+    // CREATING THE FORM DATA OBJECT
+    const data = {
+      title: title,
+      content: content,
+      imageUrl: imageUrl,
+      fileSize: fileSize,
+    };
 
     // VALIDATING FORM DATA
-    const errors = validate();
-    // UPDATING ERRORS CONSTANT
-    setErrors(errors);
-    console.log('ERRORS FROM HANDLE SUBMIT:', errors);
-    // IF ERRORS FOUND RETURN
-    if (errors) return;
+    const errorMessages = validate(data);
 
+    // UPDATING ERRORS CONSTANT
+    setErrors(errorMessages);
+    console.log('ERRORS FROM HANDLE SUBMIT:', errorMessages);
+
+    console.log('BEFORE Submitted', data);
+    // IF ERRORS FOUND RETURN
+    if (errorMessages) return;
+
+    // PERFORM ACCTION WITH SUBMITTED DATA
     console.log('Submitted', data);
   };
 
@@ -75,10 +89,10 @@ function FormJoi({ postId }) {
                 id="title"
                 placeholder="Enter Title"
                 className="form-control mb-3"
-                value={data.title}
-                onChange={(e) => setData({ ...data, title: e.target.value })}
+                value={parse(title)}
+                onChange={(e) => setTitle(e.target.value)}
               />
-              {errors && errors['title'] && (
+              {errors && errors.title && (
                 <div className="alert alert-danger">{errors['title']}</div>
               )}
 
@@ -91,6 +105,8 @@ function FormJoi({ postId }) {
                 id="featured"
                 className="form-control mb-3"
                 onChange={(e) => {
+                  setImageUrl((prev) => e.target.files[0]);
+
                   const [file] = e.target.files;
                   const desktopImg = document.getElementById('desktop-img');
                   if (file) {
@@ -98,29 +114,20 @@ function FormJoi({ postId }) {
                     console.log('LOCAL IMAGE', desktopImg.src);
                   }
                   const currentFileSize = Number(e.target.files[0].size);
-                  const currentImageName = e.target.files[0].name;
-
-                  console.log('IMAGE NAME:', currentImageName);
-
-                  setData({
-                    ...data,
-                    imageUrl: e.target.files[0],
-                    fileSize: currentFileSize,
-                    imageName: currentImageName,
-                  });
-                  console.log('DATA IN ONCHANGE:', data);
+                  console.log('FILE SIZE', currentFileSize);
+                  setFileSize(currentFileSize);
                 }}
               />
-              {errors && errors.imageUrl && !data.imageName && (
+              {errors && errors.imageUrl && (
                 <div className="alert alert-danger">{errors['imageUrl']}</div>
               )}
-
-              {errors && errors.fileSize && Number(data.fileSize) > 100000 && (
+              {errors && errors.fileSize && Number(fileSize) > 100000 && (
                 <div className="alert alert-danger">{errors['fileSize']}</div>
               )}
 
               <figure>
                 {/* DISPLAY Featured Image</h6> */}
+
                 <img
                   id="desktop-img"
                   src={placeholderImage}
@@ -139,10 +146,10 @@ function FormJoi({ postId }) {
                 cols="30"
                 rows="10"
                 className="form-control mb-3"
-                value={data.content}
-                onChange={(e) => setData({ ...data, content: e.target.value })}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
               ></textarea>
-              {errors && errors['content'] && (
+              {errors && errors.content && (
                 <div className="alert alert-danger">{errors['content']}</div>
               )}
 
