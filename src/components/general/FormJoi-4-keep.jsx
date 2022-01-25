@@ -5,8 +5,8 @@ import { Row, Col } from 'react-bootstrap';
 import Joi from 'joi-browser';
 import placeholderImage from '../../img/place-holder.png';
 
-function FormJoi() {
-  const [errors, setErrors] = useState({});
+function FormJoi({ postId }) {
+  const [errors, setErrors] = useState('');
   const [data, setData] = useState({
     title: '',
     content: '',
@@ -15,20 +15,18 @@ function FormJoi() {
     imageName: '',
   });
 
-  const schema = {
+  const schema = Joi.object({
     title: Joi.string().trim().required().label('Title'),
     content: Joi.string().required().label('Content'),
     imageUrl: Joi.object().required().label('Featured Image'),
     fileSize: Joi.number().max(100000),
     imageName: Joi.string().trim().required(),
-  };
+  });
 
   const validate = () => {
+    // console.log('IMAGE OBJ IN VALIDATE:', data.imageUrl);
     const options = { abortEarly: false };
-    console.log('DATA FROM VALIDATE', data);
     const { error } = Joi.validate(data, schema, options);
-
-    console.log('ERROR FROM VALIDATE', error);
     if (!error) return null;
 
     const errors = {};
@@ -54,37 +52,12 @@ function FormJoi() {
     // VALIDATING FORM DATA
     const errors = validate();
     // UPDATING ERRORS CONSTANT
-    setErrors((prev) => errors || {});
+    setErrors(errors);
     console.log('ERRORS FROM HANDLE SUBMIT:', errors);
     // IF ERRORS FOUND RETURN
     if (errors) return;
 
     console.log('Submitted', data);
-  };
-
-  const validateProperty = ({ name, value }) => {
-    const obj = { [name]: value };
-    const inputSchema = { [name]: schema[name] };
-    const { error } = Joi.validate(obj, inputSchema);
-
-    return error ? error.details[0].message : null;
-  };
-
-  const handleChange = ({ currentTarget: input }) => {
-    const errs = { ...errors };
-    const formData = { ...data };
-
-    const errMsg = validateProperty(input);
-    if (errMsg) errs[input.name] = errMsg;
-    else delete errs[input.name];
-
-    formData[input.name] = input.value;
-
-    setErrors(errs);
-    setData(formData);
-
-    console.log(errMsg);
-    console.log(errs);
   };
 
   return (
@@ -102,11 +75,10 @@ function FormJoi() {
                 id="title"
                 placeholder="Enter Title"
                 className="form-control mb-3"
-                // value={data.title}
-                onChange={handleChange}
+                value={data.title}
+                onChange={(e) => setData({ ...data, title: e.target.value })}
               />
-
-              {errors.title && (
+              {errors && errors['title'] && (
                 <div className="alert alert-danger">{errors['title']}</div>
               )}
 
@@ -167,10 +139,10 @@ function FormJoi() {
                 cols="30"
                 rows="10"
                 className="form-control mb-3"
-                // value={data.content}
-                onChange={handleChange}
+                value={data.content}
+                onChange={(e) => setData({ ...data, content: e.target.value })}
               ></textarea>
-              {errors.content && (
+              {errors && errors['content'] && (
                 <div className="alert alert-danger">{errors['content']}</div>
               )}
 
