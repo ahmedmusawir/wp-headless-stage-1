@@ -6,7 +6,6 @@ import Joi from 'joi-browser';
 import placeholderImage from '../../img/place-holder.png';
 import Input from '../form-joi/Input';
 import TextArea from '../form-joi/TextArea';
-import InputImage from '../form-joi/InputImage';
 
 function FormJoi() {
   const [errors, setErrors] = useState({});
@@ -85,30 +84,6 @@ function FormJoi() {
     setData(formData);
   };
 
-  const handleImageChange = (e) => {
-    const [file] = e.target.files;
-    const desktopImg = document.getElementById('desktop-img');
-    if (file) {
-      desktopImg.src = URL.createObjectURL(file);
-    }
-    const currentFileSize = Number(e.target.files[0].size);
-    const currentImageName = e.target.files[0].name;
-
-    if (currentFileSize > 100000) {
-      setErrors({
-        ...errors,
-        fileSize: 'Featued Image must be smaller than 100 Kelobytes',
-      });
-    }
-
-    setData({
-      ...data,
-      imageUrl: e.target.files[0],
-      fileSize: currentFileSize,
-      imageName: currentImageName,
-    });
-  };
-
   return (
     <Page wide={true} pageTitle="Movie Form">
       <Row className="justify-content-center">
@@ -127,16 +102,53 @@ function FormJoi() {
                 onChange={handleChange}
               />
 
-              {/* IMAGE FILE INPUT */}
-              <InputImage
+              <label className="font-weight-bold" htmlFor="featured-image">
+                Featured Image:
+              </label>
+              <input
+                type="file"
                 name="imageUrl"
-                placeholderImage={placeholderImage}
-                errors={errors}
-                data={data}
-                onChange={handleImageChange}
+                id="featured"
                 className="form-control mb-3"
-              />
+                onChange={(e) => {
+                  const [file] = e.target.files;
+                  const desktopImg = document.getElementById('desktop-img');
+                  if (file) {
+                    desktopImg.src = URL.createObjectURL(file);
+                    // console.log('LOCAL IMAGE', desktopImg.src);
+                  }
+                  const currentFileSize = Number(e.target.files[0].size);
+                  const currentImageName = e.target.files[0].name;
 
+                  // console.log('IMAGE NAME:', currentImageName);
+
+                  setData({
+                    ...data,
+                    imageUrl: e.target.files[0],
+                    fileSize: currentFileSize,
+                    imageName: currentImageName,
+                  });
+                  // console.log('DATA IN ONCHANGE:', data);
+                }}
+              />
+              {errors && errors.imageUrl && !data.imageName && (
+                <div className="alert alert-danger">{errors['imageUrl']}</div>
+              )}
+
+              {errors && errors.fileSize && Number(data.fileSize) > 100000 && (
+                <div className="alert alert-danger">{errors['fileSize']}</div>
+              )}
+
+              <figure>
+                {/* DISPLAY Featured Image</h6> */}
+                <img
+                  id="desktop-img"
+                  src={placeholderImage}
+                  alt=""
+                  width={100}
+                  height={100}
+                />
+              </figure>
               <TextArea
                 name="content"
                 hideLabel={false}
