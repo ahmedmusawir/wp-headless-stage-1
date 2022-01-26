@@ -8,10 +8,6 @@ function InputImage({
   onChange,
   className,
 }) {
-  // console.log('ERROR IMAGE FROM InputImage', errorImage);
-  // console.log('ERROR FILE SIZE FROM InputImage', errorFileSize);
-  // console.log('ERRORS FROM InputImage', errors);
-  // console.log('DATA FROM InputImage', data);
   return (
     <div>
       <label className="font-weight-bold" htmlFor="featured-image">

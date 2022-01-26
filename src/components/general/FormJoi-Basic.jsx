@@ -10,31 +10,6 @@ function FormBasic() {
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
 
-  const [data, setData] = useState({
-    userName: '',
-    accept: false,
-    gender: '',
-    location: '',
-    comment: '',
-  });
-
-  const handleChange = ({ currentTarget: input }) => {
-    // const errs = { ...errors };
-    const formData = { ...data };
-
-    // const errMsg = validateProperty(input);
-    // if (errMsg) errs[input.name] = errMsg;
-    // else delete errs[input.name];
-    console.log('HANDLE CHANGE - INPUT NAME', input.name);
-    // console.log('HANDLE CHANGE - INPUT VALUE', input.value);
-    // console.log('HANDLE CHANGE - INPUT VALUE', input.checked);
-
-    formData[input.name] = input.value;
-
-    // setErrors(errs);
-    setData(formData);
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     // FORM VALUE OBJECT
@@ -46,9 +21,13 @@ function FormBasic() {
       comment: comment,
     };
     // DISPLAY VALUE
-    console.log('Form Values: ', data);
+    console.log('Form Values: ', values);
     // RESETTING THE FORM AFTER SUBMIT
-
+    setName('');
+    setIsChecked(false);
+    setGender('');
+    setLocation('');
+    setComment('');
     // e.target.reset();
   };
   return (
@@ -83,21 +62,17 @@ function FormBasic() {
                   id="userName"
                   placeholder="User Name"
                   className="form-control"
-                  onChange={handleChange}
-                  // onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
               {/* CHECKBOX */}
               <div className="form-check pb-1 mb-2">
                 <input
-                  name="accept"
                   className="form-check-input"
                   type="checkbox"
                   checked={isChecked}
-                  // value={isChecked}
                   id="flexCheckDefault"
-                  onChange={handleChange}
-                  // onChange={(e) => setIsChecked(e.target.checked)}
+                  onChange={(e) => setIsChecked(e.target.checked)}
                 />
                 <label className="form-check-label" htmlFor="flexCheckDefault">
                   Accept Privacy Policy
@@ -108,11 +83,10 @@ function FormBasic() {
                 <input
                   className="form-check-input"
                   type="radio"
-                  name="gender"
+                  name="flexRadioDefault"
                   id="flexRadioDefault1"
                   value="male"
-                  // onChange={(e) => setGender(e.target.value)}
-                  onChange={handleChange}
+                  onChange={(e) => setGender(e.target.value)}
                   checked={gender === 'male'}
                 />
                 <label className="form-check-label" htmlFor="flexRadioDefault1">
@@ -123,11 +97,10 @@ function FormBasic() {
                 <input
                   className="form-check-input"
                   type="radio"
-                  name="gender"
+                  name="flexRadioDefault"
                   id="flexRadioDefault2"
                   value="female"
-                  // onChange={(e) => setGender(e.target.value)}
-                  onChange={handleChange}
+                  onChange={(e) => setGender(e.target.value)}
                   checked={gender === 'female'}
                 />
                 <label className="form-check-label" htmlFor="flexRadioDefault2">
@@ -137,10 +110,10 @@ function FormBasic() {
               <hr className="bg-primary" />
               {/* SELECT BOX */}
               <select
-                name="location"
+                name="locationSelect"
                 className="form-control"
                 aria-label="Default select example"
-                onChange={handleChange}
+                onChange={(e) => setLocation(e.target.value)}
               >
                 <option defaultValue="">Choose A Location</option>
                 <option value="paris">Paris</option>
@@ -156,11 +129,10 @@ function FormBasic() {
                   LEAVE A COMMENT
                 </label>
                 <textarea
-                  name="comment"
                   className="form-control"
                   id="exampleFormControlTextarea1"
                   rows="3"
-                  onChange={handleChange}
+                  onChange={(e) => setComment(e.target.value)}
                 ></textarea>
               </div>
               <hr className="bg-primary" />
