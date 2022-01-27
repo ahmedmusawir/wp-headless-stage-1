@@ -6,7 +6,6 @@ import Joi from 'joi-browser';
 import InputImage from '../form-joi/InputImage';
 import placeholderImage from '../../img/place-holder.png';
 import InputJoi from '../form-joi/InputJoi';
-import TextAreaJoi from '../form-joi/TextAreaJoi';
 
 function FormBasic() {
   const [userName, setUserName] = useState('');
@@ -20,6 +19,7 @@ function FormBasic() {
   const [imageInfo, setImageInfo] = useState('');
 
   // FORM VALUE OBJECT
+
   const formValues = {
     userName: userName,
     accept: isChecked,
@@ -133,6 +133,24 @@ function FormBasic() {
                 onChangeState={setUserName}
                 error={errors.userName}
               />
+              {/* TEXT INPUT */}
+              {/* <div className="mb-2">
+                <label htmlFor="userName" className="form-label">
+                  User Name
+                </label>
+                <input
+                  type="text"
+                  name="userName"
+                  id="userName"
+                  placeholder="User Name"
+                  className="form-control"
+                  onChange={(e) => setUserName(e.target.value)}
+                />
+                {errors.userName && (
+                  <div className="alert alert-danger">{errors['userName']}</div>
+                )}
+              </div> */}
+              {/* IMAGE UPLOAD */}
               {/* IMAGE FILE INPUT */}
               <InputImage
                 name="imageUrl"
@@ -208,17 +226,23 @@ function FormBasic() {
                 <div className="alert alert-danger">{errors['location']}</div>
               )}
               {/* TEXT AREA */}
-              <TextAreaJoi
-                hideLabel={false}
-                label="Leave A Comment"
-                name="comment"
-                placeholder="Leave A Comment"
-                className="form-control"
-                rows={3}
-                onChangeState={setComment}
-                error={errors.comment}
-              />
-
+              <div className="mb-3">
+                <label
+                  htmlFor="exampleFormControlTextarea1"
+                  className="form-label mt-2"
+                >
+                  LEAVE A COMMENT
+                </label>
+                <textarea
+                  className="form-control"
+                  id="exampleFormControlTextarea1"
+                  rows="3"
+                  onChange={(e) => setComment(e.target.value)}
+                ></textarea>
+                {errors.comment && (
+                  <div className="alert alert-danger">{errors['comment']}</div>
+                )}
+              </div>
               <hr className="bg-primary" />
               <button className="btn btn-primary" type="submit">
                 Submit
