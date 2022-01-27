@@ -14,21 +14,28 @@ function FormBasic() {
   const [comment, setComment] = useState('');
   const [errors, setErrors] = useState({});
   const [imageUrl, setImageUrl] = useState('');
-  const [fileSize, setFileSize] = useState('');
   const [imageInfo, setImageInfo] = useState('');
-  // const [formValues, setFormValues] = useState('');
+  const [formValues, setFormValues] = useState('');
 
   // FORM VALUE OBJECT
-
-  const formValues = {
-    userName: userName,
-    accept: isChecked,
-    gender: gender,
-    location: location,
-    comment: comment,
-    imageUrl: imageUrl,
-    fileSize: fileSize,
-  };
+  useEffect(() => {
+    setFormValues({
+      userName: userName,
+      accept: isChecked,
+      gender: gender,
+      location: location,
+      comment: comment,
+      imageUrl: imageUrl,
+    });
+  }, [userName, isChecked, gender, location, comment, imageUrl]);
+  // const formValues = {
+  //   userName: name,
+  //   accept: isChecked,
+  //   gender: gender,
+  //   location: location,
+  //   comment: comment,
+  //   imageUrl: imageUrl,
+  // };
 
   // JOI SCHEMA
   const schema = {
@@ -38,7 +45,7 @@ function FormBasic() {
     location: Joi.string().required().label('Location'),
     comment: Joi.string().required().label('Comment'),
     imageUrl: Joi.object().required().label('Featured Image'),
-    fileSize: Joi.number().max(100000),
+    // fileSize: Joi.number().max(100000), // THIS IS NOT NECESSARY HERE
   };
 
   // VALIDATE ON SUBMIT
@@ -51,25 +58,14 @@ function FormBasic() {
     const errors = {};
 
     for (let item of error.details) {
-      switch (item.path[0]) {
-        case 'accept':
-          item.message = 'Must Accept Our Policy or Go to hell...';
-          errors[item.path[0]] = item.message;
-          break;
-
-        case 'imageUrl':
-          item.message = 'Must Upload a Featured Image';
-          errors[item.path[0]] = item.message;
-          break;
-
-        case 'fileSize':
-          item.message = 'Featued Image must be smaller than 100 Kelobytes';
-          errors[item.path[0]] = item.message;
-          break;
-
-        default:
-          errors[item.path[0]] = item.message;
-          break;
+      if (item.path[0] === 'accept') {
+        item.message = 'Must Accept Our Policy or Go to hell...';
+        errors[item.path[0]] = item.message;
+      } else if (item.path[0] === 'imageUrl') {
+        item.message = 'Must Upload a Featured Image';
+        errors[item.path[0]] = item.message;
+      } else {
+        errors[item.path[0]] = item.message;
       }
     }
     return errors;
@@ -108,7 +104,6 @@ function FormBasic() {
     }
 
     setImageUrl(e.target.files[0]);
-    setFileSize(currentFileSize);
     setImageInfo({
       fileSize: currentFileSize,
       imageName: currentImageName,
@@ -151,7 +146,6 @@ function FormBasic() {
               {/* CHECKBOX */}
               <div className="form-check pb-1 mb-2">
                 <input
-                  name="accept"
                   className="form-check-input"
                   type="checkbox"
                   checked={isChecked}
@@ -170,7 +164,7 @@ function FormBasic() {
                 <input
                   className="form-check-input"
                   type="radio"
-                  name="gender"
+                  name="flexRadioDefault"
                   id="flexRadioDefault1"
                   value="male"
                   onChange={(e) => setGender(e.target.value)}
@@ -184,7 +178,7 @@ function FormBasic() {
                 <input
                   className="form-check-input"
                   type="radio"
-                  name="gender"
+                  name="flexRadioDefault"
                   id="flexRadioDefault2"
                   value="female"
                   onChange={(e) => setGender(e.target.value)}
@@ -205,7 +199,7 @@ function FormBasic() {
                 aria-label="Default select example"
                 onChange={(e) => setLocation(e.target.value)}
               >
-                <option value="">Choose A Location</option>
+                <option defaultValue="">Choose A Location</option>
                 <option value="paris">Paris</option>
                 <option value="kuala lumpur">KL</option>
                 <option value="sarasota">Sarasota</option>

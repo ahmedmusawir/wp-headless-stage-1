@@ -14,21 +14,36 @@ function FormBasic() {
   const [comment, setComment] = useState('');
   const [errors, setErrors] = useState({});
   const [imageUrl, setImageUrl] = useState('');
+  const [formValues, setFormValues] = useState('');
   const [fileSize, setFileSize] = useState('');
-  const [imageInfo, setImageInfo] = useState('');
-  // const [formValues, setFormValues] = useState('');
+  const [imageName, setImageName] = useState('');
 
   // FORM VALUE OBJECT
+  useEffect(() => {
+    setFormValues((prev) => ({
+      // Text input cannot add more than one character
+      // userName: prev.userName || userName,
+      userName: userName,
+      accept: prev.isChecked || isChecked,
+      gender: prev.gender || gender,
+      location: prev.location || location,
+      comment: prev.comment || comment,
+      imageUrl: prev.imageUrl || imageUrl,
+      fileSize: prev.fileSize || fileSize,
+      imageName: prev.imageName || imageName,
+    }));
+  }, [
+    userName,
+    isChecked,
+    gender,
+    location,
+    comment,
+    imageUrl,
+    fileSize,
+    imageName,
+  ]);
 
-  const formValues = {
-    userName: userName,
-    accept: isChecked,
-    gender: gender,
-    location: location,
-    comment: comment,
-    imageUrl: imageUrl,
-    fileSize: fileSize,
-  };
+  console.log('FORM VALUES OBJ:', formValues);
 
   // JOI SCHEMA
   const schema = {
@@ -39,6 +54,7 @@ function FormBasic() {
     comment: Joi.string().required().label('Comment'),
     imageUrl: Joi.object().required().label('Featured Image'),
     fileSize: Joi.number().max(100000),
+    imageName: Joi.string().trim().required(),
   };
 
   // VALIDATE ON SUBMIT
@@ -59,11 +75,6 @@ function FormBasic() {
 
         case 'imageUrl':
           item.message = 'Must Upload a Featured Image';
-          errors[item.path[0]] = item.message;
-          break;
-
-        case 'fileSize':
-          item.message = 'Featued Image must be smaller than 100 Kelobytes';
           errors[item.path[0]] = item.message;
           break;
 
@@ -91,6 +102,28 @@ function FormBasic() {
     console.log('FORM VALUES SUBMITTED: ', formValues);
   };
 
+  // const validateProperty = ({ name, value }) => {
+  //   const obj = { [name]: value };
+  //   const inputSchema = { [name]: schema[name] };
+  //   const { error } = Joi.validate(obj, inputSchema);
+
+  //   return error ? error.details[0].message : null;
+  // };
+
+  // const handleChange = ({ currentTarget: input }) => {
+  //   const errs = { ...errors };
+  //   const data = { ...formValues };
+
+  //   const errMsg = validateProperty(input);
+  //   if (errMsg) errs[input.name] = errMsg;
+  //   else delete errs[input.name];
+
+  //   data[input.name] = input.value;
+
+  //   setErrors(errs);
+  //   setFormValues(data);
+  // };
+
   const handleImageChange = (e) => {
     const [file] = e.target.files;
     const desktopImg = document.getElementById('desktop-img');
@@ -107,9 +140,9 @@ function FormBasic() {
       });
     }
 
-    setImageUrl(e.target.files[0]);
-    setFileSize(currentFileSize);
-    setImageInfo({
+    setFormValues({
+      ...formValues,
+      imageUrl: e.target.files[0],
       fileSize: currentFileSize,
       imageName: currentImageName,
     });
@@ -132,19 +165,19 @@ function FormBasic() {
                   id="userName"
                   placeholder="User Name"
                   className="form-control"
+                  // onChange={handleChange}
                   onChange={(e) => setUserName(e.target.value)}
                 />
                 {errors.userName && (
                   <div className="alert alert-danger">{errors['userName']}</div>
                 )}
               </div>
-              {/* IMAGE UPLOAD */}
               {/* IMAGE FILE INPUT */}
               <InputImage
                 name="imageUrl"
                 placeholderImage={placeholderImage}
                 errors={errors}
-                data={imageInfo}
+                data={formValues}
                 onChange={handleImageChange}
                 className="form-control mb-3"
               />
@@ -156,6 +189,7 @@ function FormBasic() {
                   type="checkbox"
                   checked={isChecked}
                   id="flexCheckDefault"
+                  // onChange={handleChange} // DOESN'T WORK
                   onChange={(e) => setIsChecked(e.target.checked)}
                 />
                 <label className="form-check-label" htmlFor="flexCheckDefault">
@@ -173,6 +207,7 @@ function FormBasic() {
                   name="gender"
                   id="flexRadioDefault1"
                   value="male"
+                  // onChange={handleChange} // DOESN'T WORK
                   onChange={(e) => setGender(e.target.value)}
                   checked={gender === 'male'}
                 />
@@ -187,6 +222,7 @@ function FormBasic() {
                   name="gender"
                   id="flexRadioDefault2"
                   value="female"
+                  // onChange={handleChange} // DOESN'T WORK
                   onChange={(e) => setGender(e.target.value)}
                   checked={gender === 'female'}
                 />
@@ -203,8 +239,10 @@ function FormBasic() {
                 name="location"
                 className="form-control"
                 aria-label="Default select example"
+                // onChange={handleChange}
                 onChange={(e) => setLocation(e.target.value)}
               >
+                {/* <option defaultValue="">Choose A Location</option> DOESN'T WORK */}
                 <option value="">Choose A Location</option>
                 <option value="paris">Paris</option>
                 <option value="kuala lumpur">KL</option>
@@ -222,9 +260,11 @@ function FormBasic() {
                   LEAVE A COMMENT
                 </label>
                 <textarea
+                  name="comment"
                   className="form-control"
                   id="exampleFormControlTextarea1"
                   rows="3"
+                  // onChange={handleChange}
                   onChange={(e) => setComment(e.target.value)}
                 ></textarea>
                 {errors.comment && (
