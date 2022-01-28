@@ -4,7 +4,6 @@ import Content from '../layouts/Content';
 import { Row, Col } from 'react-bootstrap';
 import Joi from 'joi-browser';
 import InputImage from '../form-joi/InputImage';
-import placeholderImage from '../../img/place-holder.png';
 import InputJoi from '../form-joi/InputJoi';
 import TextAreaJoi from '../form-joi/TextAreaJoi';
 
@@ -112,7 +111,6 @@ function FormBasic() {
               {/* IMAGE FILE INPUT */}
               <InputImage
                 name="imageUrl"
-                placeholderImage={placeholderImage}
                 errors={errors}
                 updateErrors={setErrors}
                 updateImageUrl={setImageUrl}

@@ -17,6 +17,7 @@ function FormBasic() {
   const [errors, setErrors] = useState({});
   const [imageUrl, setImageUrl] = useState('');
   const [fileSize, setFileSize] = useState('');
+  const [imageInfo, setImageInfo] = useState('');
 
   // FORM VALUE OBJECT
   const formValues = {
@@ -90,6 +91,29 @@ function FormBasic() {
     console.log('FORM VALUES SUBMITTED: ', formValues);
   };
 
+  const handleImageChange = (e) => {
+    const [file] = e.target.files;
+    const desktopImg = document.getElementById('desktop-img');
+    if (file) {
+      desktopImg.src = URL.createObjectURL(file);
+    }
+    const currentFileSize = Number(e.target.files[0].size);
+    const currentImageName = e.target.files[0].name;
+
+    if (currentFileSize > 100000) {
+      setErrors({
+        ...errors,
+        fileSize: 'Featued Image must be smaller than 100 Kelobytes',
+      });
+    }
+
+    setImageUrl(e.target.files[0]);
+    setFileSize(currentFileSize);
+    setImageInfo({
+      fileSize: currentFileSize,
+      imageName: currentImageName,
+    });
+  };
   return (
     <Page wide={true} pageTitle="Form Basic">
       <Row className="justify-content-center">
@@ -114,9 +138,8 @@ function FormBasic() {
                 name="imageUrl"
                 placeholderImage={placeholderImage}
                 errors={errors}
-                updateErrors={setErrors}
-                updateImageUrl={setImageUrl}
-                updateFileSize={setFileSize}
+                data={imageInfo}
+                onChange={handleImageChange}
                 className="form-control mb-3"
               />
               {/* CHECKBOX */}
