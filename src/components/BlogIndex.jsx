@@ -8,6 +8,7 @@ import LoadMorePagination, {
   loadMorePosts,
 } from '../components/general/LoadMorePagination';
 import { fetchPosts, conf, deletePost } from '../services/HttpService';
+import { confirmAlert } from 'react-confirm-alert'; // Import
 import Masonry from 'react-masonry-css';
 import './BlogIndex.scss';
 import 'animate.css';
@@ -46,14 +47,38 @@ function BlogIndex() {
     getPosts();
   }, []);
 
-  const handleDelete = async (postId) => {
-    // Loading Spinner Starts
-    setIsPending(true);
-    // Post being deleted
-    await deletePost(postId, posts, setPosts);
-    // Loading Spinner Ends
-    setIsPending(false);
+  const handleDelete = (postId) => {
+    confirmAlert({
+      title: 'Deleting the Post',
+      message: 'Are you sure to do this.',
+      buttons: [
+        {
+          label: 'Yes',
+          onClick: async () => {
+            // Loading Spinner Starts
+            setIsPending(true);
+            // Post being deleted
+            await deletePost(postId, posts, setPosts);
+            // Loading Spinner Ends
+            setIsPending(false);
+          },
+        },
+        {
+          label: 'No',
+          onClick: () => console.log('nothing'),
+        },
+      ],
+    });
   };
+
+  // const handleDelete = async (postId) => {
+  //   // Loading Spinner Starts
+  //   setIsPending(true);
+  //   // Post being deleted
+  //   await deletePost(postId, posts, setPosts);
+  //   // Loading Spinner Ends
+  //   setIsPending(false);
+  // };
 
   const handleLoadmore = async () => {
     console.log('load more button clicked');
