@@ -54,8 +54,8 @@ function BlogIndex() {
       .then((res) => {
         console.log(res);
         setPosts(posts.filter((post) => post.id !== res.id));
-        setIsPending(false);
       });
+    setIsPending(false);
   };
 
   const loadMorePosts = async (pageNumber) => {

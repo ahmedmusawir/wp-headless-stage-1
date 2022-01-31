@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import Page from './layouts/Page';
 import { Row, Col } from 'react-bootstrap';
 import Content from './layouts/Content';
 import Joi from 'joi-browser';
 import Loader from 'react-loader-spinner';
+import { insertPost } from '../services/HttpService';
+import { useHistory } from 'react-router-dom';
 import InputJoi from './form-joi/InputJoi';
 import TextAreaJoi from './form-joi/TextAreaJoi';
-import InputImageJoi from './form-joi/InputImageJoi';
-import FormJoi from './form-joi/FormJoi';
-import { insertPost } from '../services/HttpService';
-import 'animate.css';
+import InputImage from './form-joi/InputImage';
 
 function CreatePost() {
   const [title, setTitle] = useState('');
@@ -36,7 +35,46 @@ function CreatePost() {
     fileSize: Joi.number().max(100000),
   };
 
-  const doSubmit = async () => {
+  // VALIDATE ON SUBMIT
+  const validate = () => {
+    const options = { abortEarly: false };
+    const { error } = Joi.validate(formValues, schema, options);
+
+    if (!error) return null;
+
+    const errors = {};
+
+    for (let item of error.details) {
+      switch (item.path[0]) {
+        case 'imageUrl':
+          item.message = 'Must Upload a Featured Image';
+          errors[item.path[0]] = item.message;
+          break;
+
+        case 'fileSize':
+          item.message = 'Featued Image must be smaller than 100 Kelobytes';
+          errors[item.path[0]] = item.message;
+          break;
+
+        default:
+          errors[item.path[0]] = item.message;
+          break;
+      }
+    }
+    return errors;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // VALIDATING FORM DATA
+    const errors = validate();
+    // UPDATING ERRORS CONSTANT
+    setErrors((prev) => errors || {});
+    console.log('ERRORS IN HANDLE SUBMIT', errors);
+    // IF ERRORS FOUND RETURN
+    if (errors) return;
+
     // DISPLAY SUBMIT VALUE
     console.log('FORM VALUES SUBMITTED: ', formValues);
     // STARTING LOADING SPINNER
@@ -50,7 +88,7 @@ function CreatePost() {
   };
 
   return (
-    <>
+    <Page wide={true} pageTitle="Movie Form">
       <Row>
         <Col sm={12}>
           <Content width="w-100" cssClassNames="bg-light mt-2 text-center">
@@ -60,16 +98,9 @@ function CreatePost() {
       </Row>
       <Row className="justify-content-center">
         <Col sm={12}>
-          <Content
-            width="w-100"
-            cssClassNames="mx-auto animate__animated animate__lightSpeedInRight"
-          >
-            <FormJoi
-              data={formValues}
-              schema={schema}
-              setErrors={setErrors}
-              doSubmit={doSubmit}
-            >
+          <Content width="w-100" cssClassNames="mx-auto">
+            {/* SIMPLE FORM */}
+            <form className="bg-light" onSubmit={handleSubmit}>
               {/* INPUT JOI */}
               <InputJoi
                 hideLabel={false}
@@ -81,15 +112,14 @@ function CreatePost() {
                 onChangeState={setTitle}
                 error={errors.title}
               />
-
               {/* IMAGE FILE INPUT */}
-              <InputImageJoi
+              <InputImage
                 name="imageUrl"
-                errors={errors}
                 updateErrors={setErrors}
                 updateImageUrl={setImageUrl}
                 updateFileSize={setFileSize}
                 className="form-control mb-3"
+                errors={errors}
               />
 
               {/* TEXT AREA */}
@@ -103,26 +133,21 @@ function CreatePost() {
                 onChangeState={setContent}
                 error={errors.content}
               />
-              <hr className="bg-primary" />
 
-              <button className="btn btn-primary mt-2" type="submit">
+              <hr className="bg-primary" />
+              <button className="btn btn-primary" type="submit">
                 Create Now
               </button>
-              {isPending && (
-                <div className="text-center">
-                  <Loader
-                    type="ThreeDots"
-                    color="red"
-                    height={100}
-                    width={100}
-                  />
-                </div>
-              )}
-            </FormJoi>
+            </form>
           </Content>
         </Col>
+        {isPending && (
+          <div className="text-center">
+            <Loader type="ThreeDots" color="red" height={100} width={100} />
+          </div>
+        )}
       </Row>
-    </>
+    </Page>
   );
 }
 

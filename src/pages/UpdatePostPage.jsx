@@ -11,7 +11,7 @@ function UpdatePostPage() {
 
   return (
     <Page wide={true} pageTitle="Sample Page">
-      <Header />
+      {/* <Header /> */}
       <Row className="justify-content-center">
         <Col sm={12}>
           <Content width="w-100" cssClassNames="bg-light mt-2 clearfix">

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Loader from 'react-loader-spinner';
-import { Row, Col, Card, Button } from 'react-bootstrap';
+import { Row, Col, Card } from 'react-bootstrap';
 import Content from '../components/layouts/Content';
 import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';
 import LoadMorePagination, {
   loadMorePosts,
 } from '../components/general/LoadMorePagination';
-import { fetchPosts, conf, deletePost } from '../services/HttpService';
+import { fetchPosts, conf } from '../services/HttpService';
 import Masonry from 'react-masonry-css';
 import './BlogIndex.scss';
 import 'animate.css';
@@ -46,14 +46,9 @@ function BlogIndex() {
     getPosts();
   }, []);
 
-  const handleDelete = async (postId) => {
-    // Loading Spinner Starts
-    setIsPending(true);
-    // Post being deleted
-    await deletePost(postId, posts, setPosts);
-    // Loading Spinner Ends
-    setIsPending(false);
-  };
+  // useEffect(() => {
+  //   fetchPosts();
+  // }, []);
 
   const handleLoadmore = async () => {
     console.log('load more button clicked');
@@ -105,8 +100,8 @@ function BlogIndex() {
                   key={post.id}
                   className="animate__animated animate__lightSpeedInRight"
                 >
-                  <Card>
-                    <Link to={`/single-post/${post.id}`}>
+                  <Link to={`/single-post/${post.id}`}>
+                    <Card>
                       <Card.Img variant="top" src={post.featured_full} />
                       <Card.Body>
                         <Card.Title>{parse(post.title.rendered)}</Card.Title>
@@ -114,18 +109,8 @@ function BlogIndex() {
                           {parse(post.excerpt.rendered)}
                         </div>
                       </Card.Body>
-                    </Link>
-                    <Card.Footer className="text-muted">
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        className="float-right"
-                        onClick={() => handleDelete(post.id)}
-                      >
-                        Remove
-                      </Button>
-                    </Card.Footer>
-                  </Card>
+                    </Card>
+                  </Link>
                 </Col>
               ))}
           </Masonry>

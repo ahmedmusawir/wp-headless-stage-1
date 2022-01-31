@@ -85,8 +85,8 @@ function UpdatePost({ postId }) {
     <Page wide={true} pageTitle="Movie Form">
       <Row className="justify-content-center">
         <Col sm={12}>
-          <Content width="w-100" cssClassNames="bg-light mt-2 text-center">
-            <h3>
+          <Content width="w-75" cssClassNames="bg-light mt-2">
+            <h3 className="text-center">
               Post Update Page <small>with Image</small>
             </h3>
           </Content>

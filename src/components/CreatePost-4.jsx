@@ -1,55 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
 import Page from './layouts/Page';
 import { Row, Col } from 'react-bootstrap';
 import Content from './layouts/Content';
-import Loader from 'react-loader-spinner';
-import parse from 'html-react-parser';
 import Joi from 'joi-browser';
+import Loader from 'react-loader-spinner';
+import { insertPost } from '../services/HttpService';
+import { useHistory } from 'react-router-dom';
 import InputJoi from './form-joi/InputJoi';
 import TextAreaJoi from './form-joi/TextAreaJoi';
-import InputImageJoi from './form-joi/InputImageJoi';
-import FormJoi from './form-joi/FormJoi';
-import { fetchSinglePost, updatePost } from '../services/HttpService';
+import InputImage from './form-joi/InputImage';
 import 'animate.css';
 
-function UpdatePost({ postId }) {
+function CreatePost() {
   const [title, setTitle] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [content, setContent] = useState('');
-  const [oldImage, setOldImage] = useState('');
   const [fileSize, setFileSize] = useState('');
-  const [isPending, setIsPending] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isPending, setIsPending] = useState(false);
   const history = useHistory();
-
-  useEffect(() => {
-    // Loading Spinner Starts
-    setIsPending(true);
-
-    // Collecting Data from Http Service
-    const getSinglePost = async () => {
-      const gotSinglePost = await fetchSinglePost(postId);
-
-      console.log('Single Post', gotSinglePost);
-
-      // Updating Post Data
-      setTitle(gotSinglePost.title.rendered);
-      setContent(gotSinglePost.content.rendered);
-      setOldImage(gotSinglePost.featured_thumb);
-      // SETTING FILE SIZE MANUALLY
-      // So that Joi validates in case user don't upload new image
-      // If no new image is uploaded the file size won't validate by
-      // Joi, cuz it's empty. It only gets file size when a file is
-      // uploaded by the form. On the edit screen, the previous image
-      // is loaded from the REST api
-      setFileSize(500);
-    };
-
-    getSinglePost();
-    // Loading Spinner Ends
-    setIsPending(false);
-  }, []);
 
   // FORM VALUE OBJECT
   const formValues = {
@@ -62,20 +31,63 @@ function UpdatePost({ postId }) {
   // JOI SCHEMA
   const schema = {
     title: Joi.string().trim().required().label('Title'),
-    content: Joi.string().trim().required().label('Content'),
-    // This the update page so no need for empty img validation
-    imageUrl: Joi.empty(),
+    content: Joi.string().required().label('Content'),
+    imageUrl: Joi.object().required().label('Featured Image'),
     fileSize: Joi.number().max(100000),
   };
 
+  // VALIDATE ON SUBMIT
+  const validate = () => {
+    const options = { abortEarly: false };
+    const { error } = Joi.validate(formValues, schema, options);
+
+    if (!error) return null;
+
+    const errors = {};
+
+    for (let item of error.details) {
+      switch (item.path[0]) {
+        case 'imageUrl':
+          item.message = 'Must Upload a Featured Image';
+          errors[item.path[0]] = item.message;
+          break;
+
+        case 'fileSize':
+          item.message = 'Featued Image must be smaller than 100 Kelobytes';
+          errors[item.path[0]] = item.message;
+          break;
+
+        default:
+          errors[item.path[0]] = item.message;
+          break;
+      }
+    }
+    return errors;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // VALIDATING FORM DATA
+    const errors = validate();
+    // UPDATING ERRORS CONSTANT
+    setErrors((prev) => errors || {});
+    console.log('ERRORS IN HANDLE SUBMIT', errors);
+    // IF ERRORS FOUND RETURN
+    if (errors) return;
+
+    // CALLING DO SUBMIT
+    doSubmit();
+  };
+
   const doSubmit = async () => {
+    // DISPLAY SUBMIT VALUE
+    console.log('FORM VALUES SUBMITTED: ', formValues);
     // STARTING LOADING SPINNER
     setIsPending(true);
-
-    // PERFORMING ACTUAL UPDATE
-    await updatePost(imageUrl, setImageUrl, postId, title, content);
-
-    // END LOADING SPINNER
+    // INSERT POST TO WP DB
+    await insertPost(formValues);
+    // POST CREATION SUCCESS
     setIsPending(false);
     // SENDING USER TO BLOGINDEX PAGE
     history.push('/');
@@ -83,12 +95,10 @@ function UpdatePost({ postId }) {
 
   return (
     <Page wide={true} pageTitle="Movie Form">
-      <Row className="justify-content-center">
+      <Row>
         <Col sm={12}>
           <Content width="w-100" cssClassNames="bg-light mt-2 text-center">
-            <h3>
-              Post Update Page <small>with Image</small>
-            </h3>
+            <h3>Post Create Page w/ Featured Image</h3>
           </Content>
         </Col>
       </Row>
@@ -98,34 +108,27 @@ function UpdatePost({ postId }) {
             width="w-100"
             cssClassNames="mx-auto animate__animated animate__lightSpeedInRight"
           >
-            <FormJoi
-              data={formValues}
-              schema={schema}
-              setErrors={setErrors}
-              doSubmit={doSubmit}
-            >
+            {/* SIMPLE FORM */}
+            <form className="bg-light" onSubmit={handleSubmit}>
               {/* INPUT JOI */}
               <InputJoi
                 hideLabel={false}
                 label="Title"
                 type="text"
                 name="title"
-                value={parse(title)}
                 placeholder="Post Title"
                 className="form-control"
                 onChangeState={setTitle}
                 error={errors.title}
               />
-
               {/* IMAGE FILE INPUT */}
-              <InputImageJoi
+              <InputImage
                 name="imageUrl"
                 errors={errors}
                 updateErrors={setErrors}
                 updateImageUrl={setImageUrl}
                 updateFileSize={setFileSize}
                 className="form-control mb-3"
-                lastImage={oldImage}
               />
 
               {/* TEXT AREA */}
@@ -133,29 +136,18 @@ function UpdatePost({ postId }) {
                 hideLabel={false}
                 label="Insert Post Content"
                 name="content"
-                value={content}
                 placeholder="Insert Post Content"
                 className="form-control"
                 rows={3}
                 onChangeState={setContent}
                 error={errors.content}
               />
-              <hr className="bg-primary" />
 
-              <button className="btn btn-primary mt-2" type="submit">
+              <hr className="bg-primary" />
+              <button className="btn btn-primary" type="submit">
                 Create Now
               </button>
-              {isPending && (
-                <div className="text-center">
-                  <Loader
-                    type="ThreeDots"
-                    color="red"
-                    height={100}
-                    width={100}
-                  />
-                </div>
-              )}
-            </FormJoi>
+            </form>
           </Content>
         </Col>
         {isPending && (
@@ -168,4 +160,4 @@ function UpdatePost({ postId }) {
   );
 }
 
-export default UpdatePost;
+export default CreatePost;

@@ -7,7 +7,7 @@ import CreatePost from '../components/CreatePost';
 
 function CreatePostPage() {
   return (
-    <Page wide={true} pageTitle="Sample Page">
+    <Page wide={true} pageTitle="Create Post">
       <Header />
       <Row className="justify-content-center">
         <Col sm={12}>
